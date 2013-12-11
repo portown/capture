@@ -1,0 +1,10 @@
+LIBRARY	capdll
+
+SECTIONS
+	CAP_DATA READ WRITE SHARED
+
+EXPORTS
+	MouseHookProc @1
+	SetMouseHook @2
+	ResetMouseHook @3
+	IsMouseHooking @4
