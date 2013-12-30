@@ -1,6 +1,9 @@
 // menu.cpp
 
-#include "common.h"
+#include <windows.h>
+#include <windowsx.h>
+
+#include "resource.h"
 
 
 extern int nCapKey;

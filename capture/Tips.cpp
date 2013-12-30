@@ -1,6 +1,12 @@
 // Tips.cpp
 
-#include "common.h"
+#include <windows.h>
+#include <commctrl.h>
+
+#include <png.h>
+
+#include "defines.h"
+#include "funcs.h"
 
 
 extern int nCapKey;
