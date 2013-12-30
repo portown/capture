@@ -1,8 +1,12 @@
 // main.cpp
 
-#define MAIN_DECLARE
-
 #include "common.h"
+
+
+int nCapKey;
+BOOL bCapCtrl;
+BOOL bCapShift;
+BOOL bCapAlt;
 
 
 namespace

@@ -3,6 +3,12 @@
 #include "common.h"
 
 
+extern int nCapKey;
+extern BOOL bCapCtrl;
+extern BOOL bCapShift;
+extern BOOL bCapAlt;
+
+
 namespace
 {
   constexpr auto LISTMAX = 54;

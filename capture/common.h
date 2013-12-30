@@ -17,11 +17,6 @@ using namespace std;
 #include "capdll.h"
 #include "defines.h"
 #include "funcs.h"
-#include "vars.h"
-
-#pragma comment( lib, "comctl32.lib" )
-#pragma comment( lib, "capdll.lib" )
-#pragma comment( lib, "libpng.lib" )
 
 
 #endif
