@@ -8,6 +8,7 @@
 #include "capdll.h"
 
 #include "util/windows/application.hpp"
+#include "util/windows/stock_object.hpp"
 
 #include "resource.h"
 #include "defines.h"
@@ -71,7 +72,7 @@ namespace
     wc.cbClsExtra    = 0;
     wc.cbSize        = sizeof(WNDCLASSEX);
     wc.cbWndExtra    = 0;
-    wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+    wc.hbrBackground = util::windows::stock_object::white_brush.get();
     wc.hCursor       = static_cast<HCURSOR>(LoadImage(nullptr, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
     wc.hIcon         = app.load_icon_resource(IDI_CAPTURE);
     wc.hIconSm       = app.load_icon_resource(IDI_CAPTURE);
