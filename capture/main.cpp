@@ -7,6 +7,8 @@
 
 #include "capdll.h"
 
+#include "util/windows/application.hpp"
+
 #include "resource.h"
 #include "defines.h"
 #include "funcs.h"
@@ -28,29 +30,32 @@ namespace
     VK_F11, VK_F12
   };
 
-  // 関数の宣言
   LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-  bool             InitApp(HINSTANCE, char const*);
+  bool             InitApp(util::windows::application const& app);
   bool             InitInstance(HINSTANCE, char const*, int);
   int Run();
 }
 
 
-// エントリポイント
-int WINAPI WinMain(HINSTANCE hCurInst, HINSTANCE, LPSTR, int nCmd)
+auto WINAPI WinMain(
+    HINSTANCE const instanceHandle,
+    HINSTANCE,
+    LPSTR,
+    int const showingCommand)
+  -> int
 {
-  char const* const szClsNm = "CAPTURE";
+  util::windows::application app{instanceHandle, "jp.portown.capture"};
 
-  CreateMutex(nullptr, FALSE, szClsNm);
+  CreateMutex(nullptr, FALSE, app.class_name().data());
   if (GetLastError() == ERROR_ALREADY_EXISTS)
     return 0;
 
   CngCurDir();
 
-  if (!InitApp(hCurInst, szClsNm))
+  if (!InitApp(app))
     return 0;
 
-  if (!InitInstance(hCurInst, szClsNm, nCmd))
+  if (!InitInstance(app.instance_handle(), app.class_name().data(), showingCommand))
     return 0;
 
   return Run();
@@ -59,7 +64,7 @@ int WINAPI WinMain(HINSTANCE hCurInst, HINSTANCE, LPSTR, int nCmd)
 namespace
 {
   // ウィンドウクラスの登録
-  bool InitApp(HINSTANCE hInst, char const* lpCls)
+  bool InitApp(util::windows::application const& app)
   {
     WNDCLASSEX wc;
 
@@ -68,11 +73,11 @@ namespace
     wc.cbWndExtra    = 0;
     wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
     wc.hCursor       = static_cast<HCURSOR>(LoadImage(nullptr, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
-    wc.hIcon         = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(IDI_CAPTURE), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
-    wc.hIconSm       = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(IDI_CAPTURE), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
-    wc.hInstance     = hInst;
+    wc.hIcon         = app.load_icon_resource(IDI_CAPTURE);
+    wc.hIconSm       = app.load_icon_resource(IDI_CAPTURE);
+    wc.hInstance     = app.instance_handle();
     wc.lpfnWndProc   = WndProc;
-    wc.lpszClassName = lpCls;
+    wc.lpszClassName = app.class_name().data();
     wc.lpszMenuName  = MAKEINTRESOURCE(IDR_MAIN);
     wc.style         = CS_HREDRAW | CS_VREDRAW;
 

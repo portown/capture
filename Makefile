@@ -1,6 +1,6 @@
 # Makefile
 
-CXXFLAGS += -Ilibpng\\include -Izlib\\include -Icapdll -D_WIN32_IE=0x0300 -std=c++11 -Wall -Wextra
+CXXFLAGS += -I$(BOOST_ROOT)\\include -Ilibpng\\include -Izlib\\include -Icapdll -D_WIN32_IE=0x0300 -std=c++11 -Wall -Wextra -pedantic-errors
 LDFLAGS += -Llibpng\\lib
 
 MAIN_SOURCES = $(wildcard capture/*.cpp)
