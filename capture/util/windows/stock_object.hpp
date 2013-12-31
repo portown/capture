@@ -51,18 +51,20 @@ namespace util
         private:
           int id_;
         };
-
-        using stock_brush = stock_object<type::brush>;
       }
 
-      static constexpr detail::stock_brush black_brush{BLACK_BRUSH};
-      static constexpr detail::stock_brush darkgray_brush{DKGRAY_BRUSH};
-      static constexpr detail::stock_brush dc_brush{DC_BRUSH};
-      static constexpr detail::stock_brush gray_brush{GRAY_BRUSH};
-      static constexpr detail::stock_brush hollow_brush{HOLLOW_BRUSH};
-      static constexpr detail::stock_brush lightgray_brush{LTGRAY_BRUSH};
-      static constexpr detail::stock_brush null_brush{NULL_BRUSH};
-      static constexpr detail::stock_brush white_brush{WHITE_BRUSH};
+      using stock_brush = detail::stock_object<detail::type::brush>;
+
+      static constexpr stock_brush black_brush{BLACK_BRUSH};
+      static constexpr stock_brush darkgray_brush{DKGRAY_BRUSH};
+      static constexpr stock_brush dc_brush{DC_BRUSH};
+      static constexpr stock_brush gray_brush{GRAY_BRUSH};
+      static constexpr stock_brush hollow_brush{HOLLOW_BRUSH};
+      static constexpr stock_brush lightgray_brush{LTGRAY_BRUSH};
+      static constexpr stock_brush null_brush{NULL_BRUSH};
+      static constexpr stock_brush white_brush{WHITE_BRUSH};
     }
+
+    using stock_object::stock_brush;
   }
 }

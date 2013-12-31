@@ -31,8 +31,9 @@ namespace
     VK_F11, VK_F12
   };
 
+  auto create_window_class(util::windows::application const& app)
+    -> boost::optional<util::windows::window_class>;
   LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-  bool             InitApp(util::windows::application const& app);
   bool             InitInstance(HINSTANCE, char const*, int);
   int Run();
 }
@@ -45,18 +46,18 @@ auto WINAPI WinMain(
     int const showingCommand)
   -> int
 {
-  util::windows::application app{instanceHandle, "jp.portown.capture"};
+  util::windows::application app{instanceHandle};
 
-  CreateMutex(nullptr, FALSE, app.class_name().data());
+  CreateMutex(nullptr, FALSE, "jp.portown.capture");
   if (GetLastError() == ERROR_ALREADY_EXISTS)
     return 0;
 
   CngCurDir();
 
-  if (!InitApp(app))
-    return 0;
+  auto const window_class = create_window_class(app);
+  if (!window_class) { return 0; }
 
-  if (!InitInstance(app.instance_handle(), app.class_name().data(), showingCommand))
+  if (!InitInstance(app.instance_handle(), "main", showingCommand))
     return 0;
 
   return Run();
@@ -64,25 +65,18 @@ auto WINAPI WinMain(
 
 namespace
 {
-  // ウィンドウクラスの登録
-  bool InitApp(util::windows::application const& app)
+  auto create_window_class(util::windows::application const& app)
+    -> boost::optional<util::windows::window_class>
   {
-    WNDCLASSEX wc;
+    auto spec = app.create_window_class_spec("main", WndProc);
+    spec.set_background(util::windows::stock_object::white_brush);
+    spec.set_cursor(static_cast<HCURSOR>(LoadImage(nullptr, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED)));
+    spec.set_icon(app.load_icon_resource(IDI_CAPTURE));
+    spec.set_small_icon(app.load_icon_resource(IDI_CAPTURE));
+    spec.set_menu(IDR_MAIN);
+    spec.set_style(CS_HREDRAW | CS_VREDRAW);
 
-    wc.cbClsExtra    = 0;
-    wc.cbSize        = sizeof(WNDCLASSEX);
-    wc.cbWndExtra    = 0;
-    wc.hbrBackground = util::windows::stock_object::white_brush.get();
-    wc.hCursor       = static_cast<HCURSOR>(LoadImage(nullptr, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
-    wc.hIcon         = app.load_icon_resource(IDI_CAPTURE);
-    wc.hIconSm       = app.load_icon_resource(IDI_CAPTURE);
-    wc.hInstance     = app.instance_handle();
-    wc.lpfnWndProc   = WndProc;
-    wc.lpszClassName = app.class_name().data();
-    wc.lpszMenuName  = MAKEINTRESOURCE(IDR_MAIN);
-    wc.style         = CS_HREDRAW | CS_VREDRAW;
-
-    return (RegisterClassEx(&wc) != 0);
+    return spec.register_class();
   }
 
   // ウィンドウの作成
