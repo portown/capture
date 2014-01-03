@@ -124,4 +124,16 @@ GUIDELINES DESIGNINFO
 IDI_CAPTURE ICON "capture.ico"
 
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// Stringtable
+//
+
+STRINGTABLE
+{
+  IDS_MSG_NOT_SAVED, "画像が保存されていません。\n保存しますか？"
+  IDS_MSG_NOT_SAVED_TITLE, "確認"
+}
+
+
 #endif  // 日本語 resources

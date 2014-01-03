@@ -18,3 +18,6 @@
 #define IDM_ABOUT                       40006
 #define IDM_OPTION                      40008
 #define IDM_CLOSE                       40011
+
+#define IDS_MSG_NOT_SAVED               10000
+#define IDS_MSG_NOT_SAVED_TITLE         10001

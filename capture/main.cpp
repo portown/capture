@@ -3,6 +3,8 @@
 #include <iterator>
 #include <vector>
 
+#include <boost/exception/all.hpp>
+
 #include <windows.h>
 #include <commctrl.h>
 
@@ -24,7 +26,7 @@ BOOL bCapAlt;
 
 namespace
 {
-  int Keys[] =          // ÉLÅ[àÍóó
+  int Keys[] =          // „Ç≠„Éº‰∏ÄË¶ß
   { VK_ESCAPE, VK_SPACE, VK_NEXT, VK_PRIOR, VK_END, VK_HOME,
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
     'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
@@ -37,6 +39,8 @@ namespace
   LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
   bool             InitInstance(HINSTANCE, char const*, int);
   int Run();
+  std::string load_string_from_resource(HINSTANCE instance_handle,
+      UINT resource_id);
 }
 
 
@@ -80,7 +84,7 @@ namespace
     return spec.register_class();
   }
 
-  // ÉEÉBÉìÉhÉEÇÃçÏê¨
+  // „Ç¶„Ç£„É≥„Éâ„Ç¶„ÅÆ‰ΩúÊàê
   bool InitInstance(HINSTANCE hInst, char const* lpCls, int nCmd)
   {
     HWND hWnd = CreateWindowEx(0,
@@ -105,7 +109,7 @@ namespace
     return true;
   }
 
-  // ÉÅÉbÉZÅ[ÉWÅEÉãÅ[Év
+  // „É°„ÉÉ„Çª„Éº„Ç∏„Éª„É´„Éº„Éó
   int Run()
   {
     MSG msg;
@@ -119,7 +123,7 @@ namespace
     return static_cast<int>(msg.wParam);
   }
 
-  // ÉEÉBÉìÉhÉEÉvÉçÉVÅ[ÉWÉÉ
+  // „Ç¶„Ç£„É≥„Éâ„Ç¶„Éó„É≠„Ç∑„Éº„Ç∏„É£
   LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
   {
     static HINSTANCE          hInst;
@@ -327,8 +331,10 @@ namespace
               auto const nSel = TabCtrl_GetCurSel(hTab);
               if (!hCap[nSel].bSave)
               {
-                auto const ret = Mes("âÊëúÇ™ï€ë∂Ç≥ÇÍÇƒÇ¢Ç‹ÇπÇÒÅB\n"
-                           "ï€ë∂ÇµÇ‹Ç∑Ç©ÅH", "ämîF", MB_YESNOCANCEL | MB_ICONQUESTION);
+                auto const ret = Mes(
+                    load_string_from_resource(hInst, IDS_MSG_NOT_SAVED).data(),
+                    load_string_from_resource(hInst, IDS_MSG_NOT_SAVED_TITLE).data(),
+                    MB_YESNOCANCEL | MB_ICONQUESTION);
                 if (ret == IDCANCEL) break;
                 if (ret == IDYES)
                 {
@@ -372,5 +378,22 @@ namespace
     }
 
     return 0;
+  }
+
+  std::string load_string_from_resource(
+      HINSTANCE const instance_handle,
+      UINT const resource_id)
+  {
+    std::vector<char> buffer(1024);
+    for (;;)
+    {
+      auto const ret = ::LoadString(instance_handle, resource_id, buffer.data(), buffer.size());
+      if (ret == 0) { BOOST_THROW_EXCEPTION(std::logic_error{"resource not found"}); }
+      if (static_cast<std::size_t>(ret) < buffer.size()) { break; }
+
+      buffer.resize(static_cast<std::size_t>(buffer.size() * 1.5));
+    }
+
+    return std::string{buffer.data()};
   }
 }
