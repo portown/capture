@@ -1,83 +1,52 @@
-// Microsoft Visual C++ generated resource script.
-//
+// main.rc
+
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
-#include "afxres.h"
-
-/////////////////////////////////////////////////////////////////////////////
+#include <afxres.h>
 #undef APSTUDIO_READONLY_SYMBOLS
 
+
 /////////////////////////////////////////////////////////////////////////////
-// ì˙ñ{åÍ resources
+// Êó•Êú¨Ë™û resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
 #ifdef _WIN32
 LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
-#pragma code_page(932)
+#pragma code_page(65001)
 #endif //_WIN32
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE 
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE 
-BEGIN
-    "\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MAIN MENU 
-BEGIN
-    POPUP "ÉtÉ@ÉCÉã(&F)"
-    BEGIN
-        MENUITEM "ï€ë∂(&S)...",                 IDM_SAVE
+IDR_MAIN MENU
+{
+    POPUP "„Éï„Ç°„Ç§„É´(&F)"
+    {
+        MENUITEM "‰øùÂ≠ò(&S)...",                 IDM_SAVE
         MENUITEM SEPARATOR
-        MENUITEM "èIóπ(&X)",                    IDM_EXIT
-    END
-    POPUP "ê›íË(&V)"
-    BEGIN
-        MENUITEM "ÉIÉvÉVÉáÉì(&O)...",           IDM_OPTION
-    END
-    POPUP "ÉwÉãÉv(&H)"
-    BEGIN
-        MENUITEM "ÉoÅ[ÉWÉáÉìèÓïÒ(&A)...",       IDM_ABOUT
-    END
-END
+        MENUITEM "ÁµÇ‰∫Ü(&X)",                    IDM_EXIT
+    }
+    POPUP "Ë®≠ÂÆö(&V)"
+    {
+        MENUITEM "„Ç™„Éó„Ç∑„Éß„É≥(&O)...",           IDM_OPTION
+    }
+    POPUP "„Éò„É´„Éó(&H)"
+    {
+        MENUITEM "„Éê„Éº„Ç∏„Éß„É≥ÊÉÖÂ†±(&A)...",       IDM_ABOUT
+    }
+}
 
-IDR_TAB MENU 
-BEGIN
-    POPUP "É_É~Å["
-    BEGIN
-        MENUITEM "ï€ë∂(&S)...",                 IDM_SAVE
-        MENUITEM "ï¬Ç∂ÇÈ(&C)",                  IDM_CLOSE
-    END
-END
+IDR_TAB MENU
+{
+    POPUP "„ÉÄ„Éü„Éº"
+    {
+        MENUITEM "‰øùÂ≠ò(&S)...",                 IDM_SAVE
+        MENUITEM "Èñâ„Åò„Çã(&C)",                  IDM_CLOSE
+    }
+}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -86,37 +55,37 @@ END
 //
 
 IDD_OPTION DIALOGEX 0, 0, 164, 70
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | 
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP |
     WS_CAPTION | WS_SYSMENU
-CAPTION "ÉIÉvÉVÉáÉì"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
+CAPTION "„Ç™„Éó„Ç∑„Éß„É≥"
+FONT 9, "Ôº≠Ôº≥ Ôº∞„Ç¥„Ç∑„ÉÉ„ÇØ", 400, 0, 0x1
+{
     DEFPUSHBUTTON   "OK",IDOK,19,49,50,14
-    PUSHBUTTON      "ÉLÉÉÉìÉZÉã",IDCANCEL,90,49,50,14
-    COMBOBOX        IDC_CAPKEY,62,7,83,72,CBS_DROPDOWN | CBS_SORT | 
+    PUSHBUTTON      "„Ç≠„É£„É≥„Çª„É´",IDCANCEL,90,49,50,14
+    COMBOBOX        IDC_CAPKEY,62,7,83,72,CBS_DROPDOWN | CBS_SORT |
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "äJénÉLÅ[",IDC_STATIC,18,9,30,8
-    CONTROL         "Control",IDC_CAPCTRL,"Button",BS_AUTOCHECKBOX | 
+    LTEXT           "ÈñãÂßã„Ç≠„Éº",IDC_STATIC,18,9,30,8
+    CONTROL         "Control",IDC_CAPCTRL,"Button",BS_AUTOCHECKBOX |
                     WS_TABSTOP,63,22,39,10
     CONTROL         "Alt",IDC_CAPALT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     62,33,25,10
-    CONTROL         "Shift",IDC_CAPSHIFT,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "Shift",IDC_CAPSHIFT,"Button",BS_AUTOCHECKBOX |
                     WS_TABSTOP,105,22,31,10
-END
+}
 
 IDD_ABOUT DIALOGEX 0, 0, 161, 73
-STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | 
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION |
     WS_SYSMENU
-CAPTION "ÉoÅ[ÉWÉáÉìèÓïÒ"
-FONT 9, "ÇlÇr ÇoÉSÉVÉbÉN", 400, 0, 0x80
-BEGIN
+CAPTION "„Éê„Éº„Ç∏„Éß„É≥ÊÉÖÂ†±"
+FONT 9, "Ôº≠Ôº≥ Ôº∞„Ç¥„Ç∑„ÉÉ„ÇØ", 400, 0, 0x80
+{
     DEFPUSHBUTTON   "OK",IDOK,104,52,50,14
-    LTEXT           "Capture Ver.1.00É¿",IDC_STATIC,31,7,56,8
+    LTEXT           "Capture Ver.1.00Œ≤",IDC_STATIC,31,7,56,8
     LTEXT           "Produced by The aerial city",IDC_STATIC,31,19,82,8
     LTEXT           "http://www.rainbow.mlcgi.com/index.shtml",IDC_STATIC,31,
                     30,123,8
     ICON            IDI_CAPTURE,IDC_STATIC,7,7,18,21
-END
+}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -125,24 +94,24 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
-BEGIN
+GUIDELINES DESIGNINFO
+{
     "IDD_OPTION", DIALOG
-    BEGIN
+    {
         LEFTMARGIN, 7
         RIGHTMARGIN, 157
         TOPMARGIN, 7
         BOTTOMMARGIN, 63
-    END
+    }
 
     "IDD_ABOUT", DIALOG
-    BEGIN
+    {
         LEFTMARGIN, 7
         RIGHTMARGIN, 154
         TOPMARGIN, 7
         BOTTOMMARGIN, 66
-    END
-END
+    }
+}
 #endif    // APSTUDIO_INVOKED
 
 
@@ -154,18 +123,6 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_CAPTURE             ICON                    "icon1.ico"
-#endif    // ì˙ñ{åÍ resources
-/////////////////////////////////////////////////////////////////////////////
 
 
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
-
+#endif    // Êó•Êú¨Ë™û resources
