@@ -23,29 +23,29 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 
 IDR_MAIN MENU
 {
-    POPUP "ファイル(&F)"
-    {
-        MENUITEM "保存(&S)...",                 IDM_SAVE
-        MENUITEM SEPARATOR
-        MENUITEM "終了(&X)",                    IDM_EXIT
-    }
-    POPUP "設定(&V)"
-    {
-        MENUITEM "オプション(&O)...",           IDM_OPTION
-    }
-    POPUP "ヘルプ(&H)"
-    {
-        MENUITEM "バージョン情報(&A)...",       IDM_ABOUT
-    }
+  POPUP "ファイル(&F)"
+  {
+    MENUITEM "保存(&S)...", IDM_SAVE
+    MENUITEM SEPARATOR
+    MENUITEM "終了(&X)",    IDM_EXIT
+  }
+  POPUP "設定(&V)"
+  {
+    MENUITEM "オプション(&O)...", IDM_OPTION
+  }
+  POPUP "ヘルプ(&H)"
+  {
+    MENUITEM "バージョン情報(&A)...", IDM_ABOUT
+  }
 }
 
 IDR_TAB MENU
 {
-    POPUP "ダミー"
-    {
-        MENUITEM "保存(&S)...",                 IDM_SAVE
-        MENUITEM "閉じる(&C)",                  IDM_CLOSE
-    }
+  POPUP "ダミー"
+  {
+    MENUITEM "保存(&S)...", IDM_SAVE
+    MENUITEM "閉じる(&C)",  IDM_CLOSE
+  }
 }
 
 
@@ -56,35 +56,34 @@ IDR_TAB MENU
 
 IDD_OPTION DIALOGEX 0, 0, 164, 70
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP |
-    WS_CAPTION | WS_SYSMENU
+  WS_CAPTION | WS_SYSMENU
 CAPTION "オプション"
 FONT 9, "ＭＳ Ｐゴシック", 400, 0, 0x1
 {
-    DEFPUSHBUTTON   "OK",IDOK,19,49,50,14
-    PUSHBUTTON      "キャンセル",IDCANCEL,90,49,50,14
-    COMBOBOX        IDC_CAPKEY,62,7,83,72,CBS_DROPDOWN | CBS_SORT |
-                    WS_VSCROLL | WS_TABSTOP
-    LTEXT           "開始キー",IDC_STATIC,18,9,30,8
-    CONTROL         "Control",IDC_CAPCTRL,"Button",BS_AUTOCHECKBOX |
-                    WS_TABSTOP,63,22,39,10
-    CONTROL         "Alt",IDC_CAPALT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    62,33,25,10
-    CONTROL         "Shift",IDC_CAPSHIFT,"Button",BS_AUTOCHECKBOX |
-                    WS_TABSTOP,105,22,31,10
+  DEFPUSHBUTTON "OK",IDOK,19,49,50,14
+  PUSHBUTTON    "キャンセル",IDCANCEL,90,49,50,14
+  COMBOBOX      IDC_CAPKEY,62,7,83,72,CBS_DROPDOWN | CBS_SORT |
+                WS_VSCROLL | WS_TABSTOP
+  LTEXT         "開始キー",IDC_STATIC,18,9,30,8
+  CONTROL       "Control",IDC_CAPCTRL,"Button",BS_AUTOCHECKBOX |
+                WS_TABSTOP,63,22,39,10
+  CONTROL       "Alt",IDC_CAPALT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                62,33,25,10
+  CONTROL       "Shift",IDC_CAPSHIFT,"Button",BS_AUTOCHECKBOX |
+                WS_TABSTOP,105,22,31,10
 }
 
 IDD_ABOUT DIALOGEX 0, 0, 161, 73
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION |
-    WS_SYSMENU
+  WS_SYSMENU
 CAPTION "バージョン情報"
 FONT 9, "ＭＳ Ｐゴシック", 400, 0, 0x80
 {
-    DEFPUSHBUTTON   "OK",IDOK,104,52,50,14
-    LTEXT           "Capture Ver.1.00β",IDC_STATIC,31,7,56,8
-    LTEXT           "Produced by The aerial city",IDC_STATIC,31,19,82,8
-    LTEXT           "http://www.rainbow.mlcgi.com/index.shtml",IDC_STATIC,31,
-                    30,123,8
-    ICON            IDI_CAPTURE,IDC_STATIC,7,7,18,21
+  DEFPUSHBUTTON "OK",IDOK,104,52,50,14
+  LTEXT         "Capture Ver.1.00β",IDC_STATIC,31,7,56,8
+  LTEXT         "Developed by Portown",IDC_STATIC,31,19,82,8
+  LTEXT         "http://rainbow.under.jp",IDC_STATIC,31,30,123,8
+  ICON          IDI_CAPTURE,IDC_STATIC,7,7,18,21
 }
 
 
@@ -96,23 +95,23 @@ FONT 9, "ＭＳ Ｐゴシック", 400, 0, 0x80
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 {
-    "IDD_OPTION", DIALOG
-    {
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 157
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 63
-    }
+  "IDD_OPTION", DIALOG
+  {
+    LEFTMARGIN, 7
+    RIGHTMARGIN, 157
+    TOPMARGIN, 7
+    BOTTOMMARGIN, 63
+  }
 
-    "IDD_ABOUT", DIALOG
-    {
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 154
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 66
-    }
+  "IDD_ABOUT", DIALOG
+  {
+    LEFTMARGIN, 7
+    RIGHTMARGIN, 154
+    TOPMARGIN, 7
+    BOTTOMMARGIN, 66
+  }
 }
-#endif    // APSTUDIO_INVOKED
+#endif  // APSTUDIO_INVOKED
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -122,7 +121,7 @@ GUIDELINES DESIGNINFO
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_CAPTURE             ICON                    "icon1.ico"
+IDI_CAPTURE ICON "capture.ico"
 
 
-#endif    // 日本語 resources
+#endif  // 日本語 resources
