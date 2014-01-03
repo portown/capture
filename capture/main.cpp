@@ -35,8 +35,8 @@ namespace
   };
 
   auto create_window_class(util::windows::application const& app)
-    -> boost::optional<util::windows::window_class>;
-  LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+    -> std::shared_ptr<util::windows::window_class>;
+  LRESULT WndProc(HWND, UINT, WPARAM, LPARAM);
   bool             InitInstance(HINSTANCE, char const*, int);
   int Run();
   std::string load_string_from_resource(HINSTANCE instance_handle,
@@ -71,7 +71,7 @@ auto WINAPI WinMain(
 namespace
 {
   auto create_window_class(util::windows::application const& app)
-    -> boost::optional<util::windows::window_class>
+    -> std::shared_ptr<util::windows::window_class>
   {
     auto spec = app.create_window_class_spec("main", WndProc);
     spec.set_background(util::windows::stock_object::white_brush);
@@ -124,7 +124,7 @@ namespace
   }
 
   // ウィンドウプロシージャ
-  LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
+  LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
   {
     static HINSTANCE          hInst;
     static HBITMAP            hBSEnt;

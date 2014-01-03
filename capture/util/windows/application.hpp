@@ -26,8 +26,8 @@ namespace util
       HICON load_icon_resource(WORD resourceId) const;
 
       window_class_spec create_window_class_spec(
-          boost::string_ref name,
-          WNDPROC procedure) const;
+          boost::string_ref const& name,
+          window_procedure_t const& procedure) const;
 
     private:
       HINSTANCE instance_handle_;
@@ -50,8 +50,8 @@ inline HICON util::windows::application::load_icon_resource(WORD const resourceI
 }
 
 inline auto util::windows::application::create_window_class_spec(
-    boost::string_ref const name,
-    WNDPROC const procedure) const
+    boost::string_ref const& name,
+    window_procedure_t const& procedure) const
   -> window_class_spec
 {
   return window_class_spec{instance_handle_, name, procedure};

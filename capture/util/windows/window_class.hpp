@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <functional>
 #include <memory>
 
 #include <Windows.h>
@@ -11,26 +12,27 @@ namespace util
 {
   namespace windows
   {
+    using window_procedure_t = std::function<LRESULT(HWND, UINT, WPARAM, LPARAM)>;
+
     class window_class
     {
     public:
-      explicit window_class(
-          ATOM atom,
-          HINSTANCE instance_handle,
-          std::shared_ptr<void> releaser);
+      static auto register_window_class(
+          ::WNDCLASSEX wc,
+          window_procedure_t const& window_procedure)
+        -> std::shared_ptr<window_class>;
 
     private:
       ATOM atom_;
       HINSTANCE instance_handle_;
-      std::shared_ptr<void> releaser_;
+
+      explicit window_class(ATOM atom, HINSTANCE instance_handle);
+
+      static ::LRESULT CALLBACK window_procedure_impl(
+          ::HWND window_handle,
+          ::UINT message_id,
+          ::WPARAM param1,
+          ::LPARAM param2);
     };
   }
-}
-
-inline util::windows::window_class::window_class(
-    ATOM const atom,
-    HINSTANCE const instance_handle,
-    std::shared_ptr<void> const releaser)
-  : atom_{atom}, instance_handle_{instance_handle}, releaser_{releaser}
-{
 }
