@@ -1,5 +1,6 @@
 // main.cpp
 
+#include <iterator>
 #include <vector>
 
 #include <windows.h>
@@ -121,23 +122,15 @@ namespace
   // ウィンドウプロシージャ
   LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
   {
-    static HINSTANCE             hInst;
-    static HBITMAP               hBSEnt;
-    static HWND                  hTab;
-    static RECT                  rcArea;
-    static HDC                   hEntire, hSubEnt;
-    static std::vector<DCSET>    hCap;
-    static char                  szSize[32];
-    static bool                  bDrop;
-    static int                   nMax;
-    PAINTSTRUCT                  ps;
-    BITMAP                       Bm;
-    POINT                        pt;
-    HMENU                        hMenu, hSub;
-    RECT                         rc;
-    HDC                          hdc;
-    std::vector<DCSET>::iterator p;
-    int                          nSel;
+    static HINSTANCE          hInst;
+    static HBITMAP            hBSEnt;
+    static HWND               hTab;
+    static RECT               rcArea;
+    static HDC                hEntire, hSubEnt;
+    static std::vector<DCSET> hCap;
+    static char               szSize[32];
+    static bool               bDrop;
+    static int                nMax;
 
     switch (msg)
     {
@@ -158,8 +151,10 @@ namespace
               if (!bDrop)
               {
                 bDrop = true;
+                POINT pt;
                 GetCursorPos(&pt);
                 SetRect(&rcArea, pt.x, pt.y, pt.x, pt.y);
+                RECT rc;
                 GetClientRect(GetDesktopWindow(), &rc);
                 InitSurface(nullptr, hSubEnt, hBSEnt, rc.right, rc.bottom);
                 BitBlt(hSubEnt, 0, 0, rc.right, rc.bottom, hEntire, 0, 0, SRCCOPY);
@@ -173,7 +168,7 @@ namespace
               {
                 if (lstrlen(szSize))
                 {
-                  rc = rcArea;
+                  RECT rc = rcArea;
                   SortRect(&rc);
                   PutStrXor(hEntire,
                             (rc.right - rc.left) / 2 + rc.left,
@@ -181,13 +176,14 @@ namespace
                   DrawBox(hEntire, rcArea);
                 }
 
+                POINT pt;
                 GetCursorPos(&pt);
                 rcArea.right  = pt.x;
                 rcArea.bottom = pt.y;
                 wsprintf(szSize, "%d * %d", rcArea.right - rcArea.left,
                          rcArea.bottom - rcArea.top);
                 DrawBox(hEntire, rcArea);
-                rc = rcArea;
+                RECT rc = rcArea;
                 SortRect(&rc);
                 PutStrXor(hEntire,
                           (rc.right - rc.left) / 2 + rc.left,
@@ -201,12 +197,14 @@ namespace
               {
                 bDrop = false;
 
+                POINT pt;
                 GetCursorPos(&pt);
                 rcArea.right  = pt.x;
                 rcArea.bottom = pt.y;
                 ReleaseDC(hWnd, hSubEnt);
 
                 SortRect(&rcArea);
+                RECT rc;
                 GetClientRect(GetDesktopWindow(), &rc);
                 BitBlt(hEntire, 0, 0, rc.right, rc.bottom, hSubEnt, 0, 0, SRCCOPY);
                 hCap.push_back(CreateDCSet(rcArea.right - rcArea.left, rcArea.bottom - rcArea.top));
@@ -232,6 +230,7 @@ namespace
               {
                 bDrop = false;
 
+                RECT rc;
                 GetClientRect(GetDesktopWindow(), &rc);
                 BitBlt(hEntire, 0, 0, rc.right, rc.bottom, hSubEnt, 0, 0, SRCCOPY);
               }
@@ -247,35 +246,44 @@ namespace
               break;
 
             case NM_RCLICK:
-              hMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDR_TAB));
-              hSub  = GetSubMenu(hMenu, 0);
+            {
+              auto const hMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDR_TAB));
+              auto const hSub  = GetSubMenu(hMenu, 0);
+              POINT pt;
               GetCursorPos(&pt);
               TrackPopupMenu(hSub, TPM_LEFTALIGN, pt.x, pt.y, 0, hWnd, nullptr);
               DestroyMenu(hMenu);
               break;
+            }
         }
         break;
 
       case WM_PAINT:
-        hdc = BeginPaint(hWnd, &ps);
+      {
+        PAINTSTRUCT ps;
+        HDC const hdc = BeginPaint(hWnd, &ps);
+        RECT rc;
         GetClientRect(hWnd, &rc);
         PatBlt(hdc, 0, 0, rc.right, rc.bottom, WHITENESS);
-        nSel = TabCtrl_GetCurSel(hTab);
+        auto const nSel = TabCtrl_GetCurSel(hTab);
         if (nSel >= 0)
         {
           TabCtrl_AdjustRect(hTab, FALSE, &rc);
-          GetObject(hCap[nSel].hBm, sizeof(BITMAP), &Bm);
-          BitBlt(hdc, 0, rc.top, Bm.bmWidth, Bm.bmHeight, hCap[nSel].hDC, 0, 0, SRCCOPY);
+          BITMAP bm;
+          GetObject(hCap[nSel].hBm, sizeof(BITMAP), &bm);
+          BitBlt(hdc, 0, rc.top, bm.bmWidth, bm.bmHeight, hCap[nSel].hDC, 0, 0, SRCCOPY);
         }
         EndPaint(hWnd, &ps);
         break;
-
+      }
       case WM_SIZE:
+      {
+        RECT rc;
         GetClientRect(hWnd, &rc);
         TabCtrl_AdjustRect(hTab, FALSE, &rc);
         MoveWindow(hTab, 0, 0, LOWORD(lp), rc.top, TRUE);
         break;
-
+      }
       case WM_KEYDOWN:
         if (wp == Keys[nCapKey])
         {
@@ -296,11 +304,12 @@ namespace
         switch (LOWORD(wp))
         {
             case IDM_SAVE:
-              nSel = TabCtrl_GetCurSel(hTab);
+            {
+              auto const nSel = TabCtrl_GetCurSel(hTab);
               if (SavePicture(hWnd, hTab, nSel, hCap[nSel].hDC, hCap[nSel].hBm))
                 hCap[nSel].bSave = TRUE;
               break;
-
+            }
             case IDM_EXIT:
               SendMessage(hWnd, WM_CLOSE, 0, 0);
               break;
@@ -314,41 +323,37 @@ namespace
               break;
 
             case IDM_CLOSE:
-              nSel = TabCtrl_GetCurSel(hTab);
+            {
+              auto const nSel = TabCtrl_GetCurSel(hTab);
               if (!hCap[nSel].bSave)
               {
-                nSel = Mes("画像が保存されていません。\n"
+                auto const ret = Mes("画像が保存されていません。\n"
                            "保存しますか？", "確認", MB_YESNOCANCEL | MB_ICONQUESTION);
-                if (nSel == IDCANCEL) break;
-                if (nSel == IDYES)
+                if (ret == IDCANCEL) break;
+                if (ret == IDYES)
                 {
-                  nSel = TabCtrl_GetCurSel(hTab);
                   SavePicture(hWnd, hTab, nSel, hCap[nSel].hDC, hCap[nSel].hBm);
                 }
               }
-              nSel = TabCtrl_GetCurSel(hTab);
               TabCtrl_DeleteItem(hTab, nSel);
-              p  = hCap.begin();
-              p += nSel;
-              hCap.erase(p);
+              hCap.erase(std::next(hCap.begin(), nSel));
               if (TabCtrl_GetItemCount(hTab) > 1)
               {
-                ++nSel;
-                while (TabCtrl_SetCurSel(hTab, nSel) == -1)
-                  --nSel;
+                for (auto i = nSel + 1; TabCtrl_SetCurSel(hTab, i) == -1; --i);
               }
               else if (TabCtrl_GetItemCount(hTab) == 1)
               {
                 TabCtrl_SetCurSel(hTab, 0);
               }
               --nMax;
+              RECT rc;
               GetClientRect(hWnd, &rc);
               SendMessage(hWnd, WM_SIZE, 0, MAKELPARAM(rc.right, rc.bottom));
               InvalidateRect(hWnd, nullptr, FALSE);
               if (nMax == 0)
                 EnableMenuItem(GetMenu(hWnd), IDM_SAVE, MF_BYCOMMAND | MF_GRAYED);
               break;
-
+            }
             default:
               return DefWindowProc(hWnd, msg, wp, lp);
         }
