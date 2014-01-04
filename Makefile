@@ -31,7 +31,7 @@ ifeq ($(RELEASE),1)
 	strip $@
 endif
 
-capture/resources.o: capture/main.rc
+capture/resources.o: capture/main.rc capture/resource.h
 	windres $< $@
 
 capdll.dll: $(DLL_OBJECTS) capdll/main.def
