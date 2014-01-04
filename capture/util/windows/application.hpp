@@ -21,8 +21,6 @@ namespace util
       application(application const&) = delete;
       application& operator=(application const&) = delete;
 
-      HINSTANCE instance_handle() const { return instance_handle_; }
-
       HICON load_icon_resource(WORD resourceId) const;
 
       window_class_spec create_window_class_spec(

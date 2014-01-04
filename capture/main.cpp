@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <boost/exception/all.hpp>
+#include <boost/optional.hpp>
 
 #include <windows.h>
 #include <commctrl.h>
@@ -36,8 +37,9 @@ namespace
 
   auto create_window_class(util::windows::application const& app)
     -> std::shared_ptr<util::windows::window_class>;
+  auto create_main_window(util::windows::window_class const& window_class)
+    -> boost::optional<HWND>;
   LRESULT WndProc(HWND, UINT, WPARAM, LPARAM);
-  bool             InitInstance(HINSTANCE, char const*, int);
   int Run();
   std::string load_string_from_resource(HINSTANCE instance_handle,
       UINT resource_id);
@@ -62,8 +64,11 @@ auto WINAPI WinMain(
   auto const window_class = create_window_class(app);
   if (!window_class) { return 0; }
 
-  if (!InitInstance(app.instance_handle(), "main", showingCommand))
-    return 0;
+  auto const main_window = create_main_window(*window_class);
+  if (!main_window) { return 0; }
+
+  ::ShowWindow(*main_window, showingCommand);
+  ::UpdateWindow(*main_window);
 
   return Run();
 }
@@ -84,29 +89,23 @@ namespace
     return spec.register_class();
   }
 
-  // ウィンドウの作成
-  bool InitInstance(HINSTANCE hInst, char const* lpCls, int nCmd)
+  auto create_main_window(util::windows::window_class const& window_class)
+    -> boost::optional<HWND>
   {
-    HWND hWnd = CreateWindowEx(0,
-                               lpCls,
-                               "Capture",
-                               WS_OVERLAPPEDWINDOW,
-                               CW_USEDEFAULT,
-                               CW_USEDEFAULT,
-                               CW_USEDEFAULT,
-                               CW_USEDEFAULT,
-                               nullptr,
-                               nullptr,
-                               hInst,
-                               nullptr);
+    HWND const hWnd = CreateWindowEx(0,
+        window_class.name(),
+        "Capture",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        nullptr,
+        nullptr,
+        window_class.instance_handle(),
+        nullptr);
 
-    if (!hWnd)
-      return false;
-
-    ShowWindow(hWnd, nCmd);
-    UpdateWindow(hWnd);
-
-    return true;
+    return boost::make_optional(hWnd, hWnd);
   }
 
   // メッセージ・ループ

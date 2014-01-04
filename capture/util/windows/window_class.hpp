@@ -22,6 +22,9 @@ namespace util
           window_procedure_t const& window_procedure)
         -> std::shared_ptr<window_class>;
 
+      LPCSTR name() const { return reinterpret_cast<LPCSTR>(LOWORD(atom_)); }
+      HINSTANCE instance_handle() const { return instance_handle_; }
+
     private:
       ATOM atom_;
       HINSTANCE instance_handle_;
