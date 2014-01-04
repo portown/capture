@@ -7,7 +7,7 @@ else
 endif
 
 CXXFLAGS += -pipe -I$(BOOST_ROOT)\\include -Ilibpng\\include -Izlib\\include -Icapdll -D_WIN32_IE=0x0300 -std=c++11 -Wall -Wextra -pedantic-errors
-LDFLAGS += -Llibpng\\lib
+LDFLAGS += -Llibpng\\lib -mwindows
 
 MAIN_DIRS = capture capture/util capture/util/windows
 MAIN_SOURCES = $(wildcard $(addsuffix /*.cpp,$(MAIN_DIRS)))
