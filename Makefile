@@ -7,13 +7,13 @@ else
 	CXXFLAGS += -g -O0
 endif
 
-CXXFLAGS += -pipe -I$(BOOST_ROOT)\\include -Ilibpng\\include -Izlib\\include -Icapdll -D_WIN32_IE=0x0300 -std=c++11 -Wall -Wextra -pedantic-errors
-LDFLAGS += -Llibpng\\lib
+CXXFLAGS += -pipe -std=c++11 -Wall -Wextra -pedantic-errors
+CXXFLAGS += $(addprefix -I,$(subst ;, ,$(INCLUDE))) -I$(BOOST_ROOT)\\include -Icapdll -D_WIN32_IE=0x0300
 
 MAIN_DIRS = capture capture/util capture/util/windows
 MAIN_SOURCES = $(wildcard $(addsuffix /*.cpp,$(MAIN_DIRS)))
 MAIN_OBJECTS = $(MAIN_SOURCES:.cpp=.o) capture/resources.o
-MAIN_LIBS = -lgdi32 -lcomctl32 -lcomdlg32 -lpng
+MAIN_LIBS = -lgdi32 -lcomctl32 -lcomdlg32 -lpng -lz
 
 DLL_SOURCES = $(wildcard capdll/*.cpp)
 DLL_OBJECTS = $(DLL_SOURCES:.cpp=.o)

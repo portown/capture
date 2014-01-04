@@ -233,7 +233,7 @@ namespace
       return false;
     }
 
-    if (setjmp(lpps->jmpbuf))
+    if (setjmp(png_jmpbuf(lpps)))
     {
       png_destroy_write_struct(&lpps, &lppi);
       fclose(fp);
