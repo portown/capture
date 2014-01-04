@@ -80,7 +80,7 @@ CAPTION "バージョン情報"
 FONT 9, "ＭＳ Ｐゴシック", 400, 0, 0x80
 {
   DEFPUSHBUTTON "OK",IDOK,104,52,50,14
-  LTEXT         "Capture Ver.1.00β",IDC_STATIC,31,7,56,8
+  LTEXT         "Capture Ver.1.1.0",IDC_STATIC,31,7,56,8
   LTEXT         "Developed by Portown",IDC_STATIC,31,19,82,8
   LTEXT         "http://rainbow.under.jp",IDC_STATIC,31,30,123,8
   ICON          IDI_CAPTURE,IDC_STATIC,7,7,18,21

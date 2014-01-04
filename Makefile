@@ -1,6 +1,13 @@
 # Makefile
 
-CXXFLAGS += -I$(BOOST_ROOT)\\include -Ilibpng\\include -Izlib\\include -Icapdll -D_WIN32_IE=0x0300 -std=c++11 -Wall -Wextra -pedantic-errors
+ifeq ($(RELEASE),1)
+	CXXFLAGS += -O3
+	LDFLAGS += -mwindows -static-libgcc -static-libstdc++
+else
+	CXXFLAGS += -g -O0
+endif
+
+CXXFLAGS += -pipe -I$(BOOST_ROOT)\\include -Ilibpng\\include -Izlib\\include -Icapdll -D_WIN32_IE=0x0300 -std=c++11 -Wall -Wextra -pedantic-errors
 LDFLAGS += -Llibpng\\lib
 
 MAIN_DIRS = capture capture/util capture/util/windows
@@ -21,12 +28,18 @@ clean:
 
 capture.exe: $(MAIN_OBJECTS) capdll.a
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(MAIN_LIBS)
+ifeq ($(RELEASE),1)
+	strip $@
+endif
 
-capture/resources.o: capture/main.rc
+capture/resources.o: capture/main.rc capture/resource.h
 	windres $< $@
 
 capdll.dll: $(DLL_OBJECTS) capdll/main.def
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $^ $(DLL_LIBS) -Wl,--enable-stdcall-fixup
+ifeq ($(RELEASE),1)
+	strip $@
+endif
 
 capdll.a: capdll.dll
 	dlltool -l $@ --dllname $< --def capdll/main.def

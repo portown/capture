@@ -306,11 +306,11 @@ namespace
     ofn.lpstrFilter    = "BMPファイル(*.bmp)\0*.bmp\0PNGファイル(*.png)\0*.png\0\0";
     ofn.lpstrFile      = szFName;
     ofn.lpstrFileTitle = szTitle;
-    ofn.nFilterIndex   = 1;
+    ofn.nFilterIndex   = 2;
     ofn.nMaxFile       = dwSize;
     ofn.nMaxFileTitle  = MAX_PATH;
     ofn.Flags          = OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
-    ofn.lpstrDefExt    = "bmp";
+    ofn.lpstrDefExt    = "png";
     ofn.lpstrTitle     = "画像を保存";
 
     if (!GetSaveFileName(&ofn))
