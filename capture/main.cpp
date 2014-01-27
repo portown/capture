@@ -288,7 +288,7 @@ namespace
         break;
       }
       case WM_KEYDOWN:
-        if (wp == Keys[nCapKey])
+        if (static_cast<int>(wp) == Keys[nCapKey])
         {
           if (bCapCtrl && GetKeyState(VK_CONTROL) >= 0) break;
           if (bCapShift && GetKeyState(VK_SHIFT) >= 0) break;
