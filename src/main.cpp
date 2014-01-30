@@ -1,6 +1,7 @@
 // main.cpp
 
 #include <iterator>
+#include <memory>
 #include <vector>
 
 #include <boost/exception/all.hpp>
@@ -9,6 +10,8 @@
 #include <commctrl.h>
 
 #include "capdll.h"
+
+#include "view/main_view.hpp"
 
 #include "resource.h"
 #include "defines.h"
@@ -23,6 +26,8 @@ BOOL bCapAlt;
 
 namespace
 {
+  namespace view = capture::view;
+
   constexpr int Keys[] =          // キー一覧
   { VK_ESCAPE, VK_SPACE, VK_NEXT, VK_PRIOR, VK_END, VK_HOME,
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
@@ -34,7 +39,7 @@ namespace
   // 関数の宣言
   LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
   bool             InitApp(HINSTANCE, char const*);
-  bool             InitInstance(HINSTANCE, char const*, int);
+  bool             InitInstance(HINSTANCE, char const*, int, view::main_view&);
   int Run();
   std::string load_string_from_resource(HINSTANCE instance_handle,
       UINT resource_id);
@@ -54,7 +59,8 @@ int WINAPI WinMain(HINSTANCE hCurInst, HINSTANCE, LPSTR, int nCmd)
   if (!InitApp(hCurInst, main_class_name))
     return 0;
 
-  if (!InitInstance(hCurInst, main_class_name, nCmd))
+  auto const main_view = std::make_shared<view::main_view>();
+  if (!InitInstance(hCurInst, main_class_name, nCmd, *main_view))
     return 0;
 
   return Run();
@@ -69,7 +75,7 @@ namespace
 
     wc.cbClsExtra    = 0;
     wc.cbSize        = sizeof(WNDCLASSEX);
-    wc.cbWndExtra    = 0;
+    wc.cbWndExtra    = sizeof(void*);
     wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
     wc.hCursor       = static_cast<HCURSOR>(LoadImage(nullptr, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
     wc.hIcon         = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(IDI_CAPTURE), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
@@ -84,7 +90,7 @@ namespace
   }
 
   // ウィンドウの作成
-  bool InitInstance(HINSTANCE hInst, char const* lpCls, int nCmd)
+  bool InitInstance(HINSTANCE hInst, char const* lpCls, int nCmd, view::main_view& view)
   {
     HWND hWnd = CreateWindowEx(0,
                                lpCls,
@@ -97,7 +103,7 @@ namespace
                                nullptr,
                                nullptr,
                                hInst,
-                               nullptr);
+                               &view);
 
     if (!hWnd)
       return false;
@@ -138,14 +144,17 @@ namespace
     switch (msg)
     {
       case WM_CREATE:
-        hInst = reinterpret_cast<LPCREATESTRUCT>(lp)->hInstance;
+      {
+        auto const args = *reinterpret_cast<LPCREATESTRUCT>(lp);
+        ::SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast< ::LONG>(args.lpCreateParams));
+        hInst = args.hInstance;
         ReadMyProfile();
         hEntire = GetDC(nullptr);
         hTab    = CreateMyTab(hWnd);
         EnableMenuItem(GetMenu(hWnd), IDM_SAVE, MF_BYCOMMAND | MF_GRAYED);
         nMax = 0;
         break;
-
+      }
       case WM_USER:
         switch (wp)
         {
