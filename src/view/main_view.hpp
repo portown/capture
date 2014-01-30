@@ -36,6 +36,8 @@ namespace capture
 
       auto on_tab_right_clicked() -> void;
 
+      auto on_menu_save() -> void;
+
     private:
       ::HWND             window_handle_;
       HINSTANCE          hInst;

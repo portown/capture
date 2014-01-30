@@ -184,12 +184,9 @@ auto ns::main_view::on_event(
       switch (LOWORD(param1))
       {
         case IDM_SAVE:
-          {
-            auto const nSel = TabCtrl_GetCurSel(hTab);
-            if (SavePicture(window_handle_, hTab, nSel, hCap[nSel].hDC, hCap[nSel].hBm))
-              hCap[nSel].bSave = TRUE;
-            break;
-          }
+          on_menu_save();
+          break;
+
         case IDM_EXIT:
           SendMessage(window_handle_, WM_CLOSE, 0, 0);
           break;
@@ -311,6 +308,14 @@ auto ns::main_view::on_tab_right_clicked() -> void
   ::GetCursorPos(&pt);
   ::TrackPopupMenu(hSub, TPM_LEFTALIGN, pt.x, pt.y, 0, window_handle_, nullptr);
   ::DestroyMenu(hMenu);
+}
+
+
+auto ns::main_view::on_menu_save() -> void
+{
+  auto const nSel = TabCtrl_GetCurSel(hTab);
+  if (::SavePicture(window_handle_, hTab, nSel, hCap[nSel].hDC, hCap[nSel].hBm))
+    hCap[nSel].bSave = TRUE;
 }
 
 
