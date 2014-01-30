@@ -184,19 +184,7 @@ auto ns::main_view::on_event(
       break;
 
     case WM_KEYDOWN:
-      if (static_cast<int>(param1) == Keys[nCapKey])
-      {
-        if (bCapCtrl && GetKeyState(VK_CONTROL) >= 0) break;
-        if (bCapShift && GetKeyState(VK_SHIFT) >= 0) break;
-        if (bCapAlt && GetKeyState(VK_MENU) >= 0) break;
-
-        if (!IsMouseHooking())
-        {
-          SetMouseHook(window_handle_, SMH_EXCLUDE);
-          CloseWindow(window_handle_);
-        }
-        break;
-      }
+      on_key_down(param1);
       break;
 
     case WM_COMMAND:
@@ -299,6 +287,21 @@ auto ns::main_view::on_size(::WORD const new_width) -> void
   ::GetClientRect(window_handle_, &rc);
   TabCtrl_AdjustRect(hTab, FALSE, &rc);
   ::MoveWindow(hTab, 0, 0, new_width, rc.top, TRUE);
+}
+
+auto ns::main_view::on_key_down(int const key_code) -> void
+{
+  if (key_code != Keys[nCapKey]) return;
+
+  if (bCapCtrl && ::GetKeyState(VK_CONTROL) >= 0) return;
+  if (bCapShift && ::GetKeyState(VK_SHIFT) >= 0) return;
+  if (bCapAlt && ::GetKeyState(VK_MENU) >= 0) return;
+
+  if (!::IsMouseHooking())
+  {
+    ::SetMouseHook(window_handle_, SMH_EXCLUDE);
+    ::CloseWindow(window_handle_);
+  }
 }
 
 
