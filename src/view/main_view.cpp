@@ -249,11 +249,7 @@ auto ns::main_view::on_event(
       break;
 
     case WM_DESTROY:
-      if (IsMouseHooking())
-        ResetMouseHook();
-      DestroyWindow(hTab);
-      WriteMyProfile();
-      PostQuitMessage(0);
+      on_destroy();
       break;
 
     default:
@@ -302,6 +298,15 @@ auto ns::main_view::on_key_down(int const key_code) -> void
     ::SetMouseHook(window_handle_, SMH_EXCLUDE);
     ::CloseWindow(window_handle_);
   }
+}
+
+auto ns::main_view::on_destroy() -> void
+{
+  if (::IsMouseHooking())
+    ::ResetMouseHook();
+  ::DestroyWindow(hTab);
+  ::WriteMyProfile();
+  ::PostQuitMessage(0);
 }
 
 
