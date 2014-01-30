@@ -44,14 +44,13 @@ namespace
 // エントリポイント
 int WINAPI WinMain(HINSTANCE hCurInst, HINSTANCE, LPSTR, int nCmd)
 {
-  char const* const szClsNm = "CAPTURE";
-
-  CreateMutex(nullptr, FALSE, szClsNm);
+  CreateMutex(nullptr, FALSE, "jp.portown.capture");
   if (GetLastError() == ERROR_ALREADY_EXISTS)
     return 0;
 
   CngCurDir();
 
+  constexpr auto szClsNm = "CAPTURE";
   if (!InitApp(hCurInst, szClsNm))
     return 0;
 
