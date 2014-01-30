@@ -4,15 +4,11 @@
 #include <vector>
 
 #include <boost/exception/all.hpp>
-#include <boost/optional.hpp>
 
 #include <windows.h>
 #include <commctrl.h>
 
 #include "capdll.h"
-
-#include "util/windows/application.hpp"
-#include "util/windows/stock_object.hpp"
 
 #include "resource.h"
 #include "defines.h"
@@ -35,77 +31,82 @@ namespace
     VK_F11, VK_F12
   };
 
-  auto create_window_class(util::windows::application const& app)
-    -> std::shared_ptr<util::windows::window_class>;
-  auto create_main_window(util::windows::window_class const& window_class)
-    -> boost::optional<HWND>;
-  LRESULT WndProc(HWND, UINT, WPARAM, LPARAM);
+  // 関数の宣言
+  LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+  bool             InitApp(HINSTANCE, char const*);
+  bool             InitInstance(HINSTANCE, char const*, int);
   int Run();
   std::string load_string_from_resource(HINSTANCE instance_handle,
       UINT resource_id);
 }
 
 
-auto WINAPI WinMain(
-    HINSTANCE const instanceHandle,
-    HINSTANCE,
-    LPSTR,
-    int const showingCommand)
-  -> int
+// エントリポイント
+int WINAPI WinMain(HINSTANCE hCurInst, HINSTANCE, LPSTR, int nCmd)
 {
-  util::windows::application app{instanceHandle};
+  char const* const szClsNm = "CAPTURE";
 
-  CreateMutex(nullptr, FALSE, "jp.portown.capture");
+  CreateMutex(nullptr, FALSE, szClsNm);
   if (GetLastError() == ERROR_ALREADY_EXISTS)
     return 0;
 
   CngCurDir();
 
-  auto const window_class = create_window_class(app);
-  if (!window_class) { return 0; }
+  if (!InitApp(hCurInst, szClsNm))
+    return 0;
 
-  auto const main_window = create_main_window(*window_class);
-  if (!main_window) { return 0; }
-
-  ::ShowWindow(*main_window, showingCommand);
-  ::UpdateWindow(*main_window);
+  if (!InitInstance(hCurInst, szClsNm, nCmd))
+    return 0;
 
   return Run();
 }
 
 namespace
 {
-  auto create_window_class(util::windows::application const& app)
-    -> std::shared_ptr<util::windows::window_class>
+  // ウィンドウクラスの登録
+  bool InitApp(HINSTANCE hInst, char const* lpCls)
   {
-    auto spec = app.create_window_class_spec("main", WndProc);
-    spec.set_background(util::windows::stock_object::white_brush);
-    spec.set_cursor(static_cast<HCURSOR>(LoadImage(nullptr, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED)));
-    spec.set_icon(app.load_icon_resource(IDI_CAPTURE));
-    spec.set_small_icon(app.load_icon_resource(IDI_CAPTURE));
-    spec.set_menu(IDR_MAIN);
-    spec.set_style(CS_HREDRAW | CS_VREDRAW);
+    WNDCLASSEX wc;
 
-    return spec.register_class();
+    wc.cbClsExtra    = 0;
+    wc.cbSize        = sizeof(WNDCLASSEX);
+    wc.cbWndExtra    = 0;
+    wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+    wc.hCursor       = static_cast<HCURSOR>(LoadImage(nullptr, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
+    wc.hIcon         = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(IDI_CAPTURE), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
+    wc.hIconSm       = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(IDI_CAPTURE), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
+    wc.hInstance     = hInst;
+    wc.lpfnWndProc   = WndProc;
+    wc.lpszClassName = lpCls;
+    wc.lpszMenuName  = MAKEINTRESOURCE(IDR_MAIN);
+    wc.style         = CS_HREDRAW | CS_VREDRAW;
+
+    return (RegisterClassEx(&wc) != 0);
   }
 
-  auto create_main_window(util::windows::window_class const& window_class)
-    -> boost::optional<HWND>
+  // ウィンドウの作成
+  bool InitInstance(HINSTANCE hInst, char const* lpCls, int nCmd)
   {
-    HWND const hWnd = CreateWindowEx(0,
-        window_class.name(),
-        "Capture",
-        WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        nullptr,
-        nullptr,
-        window_class.instance_handle(),
-        nullptr);
+    HWND hWnd = CreateWindowEx(0,
+                               lpCls,
+                               "Capture",
+                               WS_OVERLAPPEDWINDOW,
+                               CW_USEDEFAULT,
+                               CW_USEDEFAULT,
+                               CW_USEDEFAULT,
+                               CW_USEDEFAULT,
+                               nullptr,
+                               nullptr,
+                               hInst,
+                               nullptr);
 
-    return boost::make_optional(hWnd, hWnd);
+    if (!hWnd)
+      return false;
+
+    ShowWindow(hWnd, nCmd);
+    UpdateWindow(hWnd);
+
+    return true;
   }
 
   // メッセージ・ループ
@@ -123,7 +124,7 @@ namespace
   }
 
   // ウィンドウプロシージャ
-  LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
+  LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
   {
     static HINSTANCE          hInst;
     static HBITMAP            hBSEnt;
