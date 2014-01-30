@@ -30,6 +30,7 @@ namespace capture
 
     private:
       auto on_paint() -> void;
+      auto on_size(::WORD new_width) -> void;
 
     private:
       ::HWND             window_handle_;

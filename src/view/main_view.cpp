@@ -180,13 +180,9 @@ auto ns::main_view::on_event(
       break;
 
     case WM_SIZE:
-      {
-        RECT rc;
-        GetClientRect(window_handle_, &rc);
-        TabCtrl_AdjustRect(hTab, FALSE, &rc);
-        MoveWindow(hTab, 0, 0, LOWORD(param2), rc.top, TRUE);
-        break;
-      }
+      on_size(LOWORD(param2));
+      break;
+
     case WM_KEYDOWN:
       if (static_cast<int>(param1) == Keys[nCapKey])
       {
@@ -295,6 +291,14 @@ auto ns::main_view::on_paint() -> void
     ::BitBlt(hdc, 0, rc.top, bm.bmWidth, bm.bmHeight, hCap[nSel].hDC, 0, 0, SRCCOPY);
   }
   ::EndPaint(window_handle_, &ps);
+}
+
+auto ns::main_view::on_size(::WORD const new_width) -> void
+{
+  ::RECT rc;
+  ::GetClientRect(window_handle_, &rc);
+  TabCtrl_AdjustRect(hTab, FALSE, &rc);
+  ::MoveWindow(hTab, 0, 0, new_width, rc.top, TRUE);
 }
 
 
