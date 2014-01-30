@@ -50,11 +50,11 @@ int WINAPI WinMain(HINSTANCE hCurInst, HINSTANCE, LPSTR, int nCmd)
 
   CngCurDir();
 
-  constexpr auto szClsNm = "CAPTURE";
-  if (!InitApp(hCurInst, szClsNm))
+  constexpr auto main_class_name = "main";
+  if (!InitApp(hCurInst, main_class_name))
     return 0;
 
-  if (!InitInstance(hCurInst, szClsNm, nCmd))
+  if (!InitInstance(hCurInst, main_class_name, nCmd))
     return 0;
 
   return Run();
