@@ -2,6 +2,7 @@
 
 #include "main_view.hpp"
 
+#include <iterator>
 #include <stdexcept>
 #include <string>
 
@@ -200,39 +201,9 @@ auto ns::main_view::on_event(
           break;
 
         case IDM_CLOSE:
-          {
-            auto const nSel = TabCtrl_GetCurSel(hTab);
-            if (!hCap[nSel].bSave)
-            {
-              auto const ret = Mes(
-                  load_string_from_resource(hInst, IDS_MSG_NOT_SAVED).data(),
-                  load_string_from_resource(hInst, IDS_MSG_NOT_SAVED_TITLE).data(),
-                  MB_YESNOCANCEL | MB_ICONQUESTION);
-              if (ret == IDCANCEL) break;
-              if (ret == IDYES)
-              {
-                SavePicture(window_handle_, hTab, nSel, hCap[nSel].hDC, hCap[nSel].hBm);
-              }
-            }
-            TabCtrl_DeleteItem(hTab, nSel);
-            hCap.erase(std::next(hCap.begin(), nSel));
-            if (TabCtrl_GetItemCount(hTab) > 1)
-            {
-              for (auto i = nSel + 1; TabCtrl_SetCurSel(hTab, i) == -1; --i);
-            }
-            else if (TabCtrl_GetItemCount(hTab) == 1)
-            {
-              TabCtrl_SetCurSel(hTab, 0);
-            }
-            --nMax;
-            RECT rc;
-            GetClientRect(window_handle_, &rc);
-            SendMessage(window_handle_, WM_SIZE, 0, MAKELPARAM(rc.right, rc.bottom));
-            InvalidateRect(window_handle_, nullptr, FALSE);
-            if (nMax == 0)
-              EnableMenuItem(GetMenu(window_handle_), IDM_SAVE, MF_BYCOMMAND | MF_GRAYED);
-            break;
-          }
+          on_menu_close();
+          break;
+
         default:
           return DefWindowProc(window_handle_, message, param1, param2);
       }
@@ -316,6 +287,40 @@ auto ns::main_view::on_menu_save() -> void
   auto const nSel = TabCtrl_GetCurSel(hTab);
   if (::SavePicture(window_handle_, hTab, nSel, hCap[nSel].hDC, hCap[nSel].hBm))
     hCap[nSel].bSave = TRUE;
+}
+
+auto ns::main_view::on_menu_close() -> void
+{
+  auto const nSel = TabCtrl_GetCurSel(hTab);
+  if (!hCap[nSel].bSave)
+  {
+    auto const ret = ::Mes(
+        load_string_from_resource(hInst, IDS_MSG_NOT_SAVED).data(),
+        load_string_from_resource(hInst, IDS_MSG_NOT_SAVED_TITLE).data(),
+        MB_YESNOCANCEL | MB_ICONQUESTION);
+    if (ret == IDCANCEL) return;
+    if (ret == IDYES)
+    {
+      ::SavePicture(window_handle_, hTab, nSel, hCap[nSel].hDC, hCap[nSel].hBm);
+    }
+  }
+  TabCtrl_DeleteItem(hTab, nSel);
+  hCap.erase(std::next(hCap.begin(), nSel));
+  if (TabCtrl_GetItemCount(hTab) > 1)
+  {
+    for (auto i = nSel + 1; TabCtrl_SetCurSel(hTab, i) == -1; --i);
+  }
+  else if (TabCtrl_GetItemCount(hTab) == 1)
+  {
+    TabCtrl_SetCurSel(hTab, 0);
+  }
+  --nMax;
+  ::RECT rc;
+  ::GetClientRect(window_handle_, &rc);
+  ::SendMessage(window_handle_, WM_SIZE, 0, MAKELPARAM(rc.right, rc.bottom));
+  ::InvalidateRect(window_handle_, nullptr, FALSE);
+  if (nMax == 0)
+    EnableMenuItem(::GetMenu(window_handle_), IDM_SAVE, MF_BYCOMMAND | MF_GRAYED);
 }
 
 

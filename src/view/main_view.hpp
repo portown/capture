@@ -37,6 +37,7 @@ namespace capture
       auto on_tab_right_clicked() -> void;
 
       auto on_menu_save() -> void;
+      auto on_menu_close() -> void;
 
     private:
       ::HWND             window_handle_;
