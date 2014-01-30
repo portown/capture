@@ -11,7 +11,7 @@ CXXFLAGS += -pipe -std=c++11 -Wall -Wextra -pedantic-errors
 CXXFLAGS += -I$(BOOST_ROOT)\include -Icapdll -D_WIN32_IE=0x0300
 
 MAIN_BIN = capture.exe
-MAIN_DIRS = src
+MAIN_DIRS = src src/view
 MAIN_SOURCES = $(wildcard $(addsuffix /*.cpp,$(MAIN_DIRS)))
 MAIN_OBJECTS = $(MAIN_SOURCES:.cpp=.o)
 MAIN_DEPENDS = $(MAIN_SOURCES:.cpp=.d)
