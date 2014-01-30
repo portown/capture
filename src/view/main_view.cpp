@@ -176,23 +176,9 @@ auto ns::main_view::on_event(
       break;
 
     case WM_PAINT:
-      {
-        PAINTSTRUCT ps;
-        HDC const hdc = BeginPaint(window_handle_, &ps);
-        RECT rc;
-        GetClientRect(window_handle_, &rc);
-        PatBlt(hdc, 0, 0, rc.right, rc.bottom, WHITENESS);
-        auto const nSel = TabCtrl_GetCurSel(hTab);
-        if (nSel >= 0)
-        {
-          TabCtrl_AdjustRect(hTab, FALSE, &rc);
-          BITMAP bm;
-          GetObject(hCap[nSel].hBm, sizeof(BITMAP), &bm);
-          BitBlt(hdc, 0, rc.top, bm.bmWidth, bm.bmHeight, hCap[nSel].hDC, 0, 0, SRCCOPY);
-        }
-        EndPaint(window_handle_, &ps);
-        break;
-      }
+      on_paint();
+      break;
+
     case WM_SIZE:
       {
         RECT rc;
@@ -291,6 +277,24 @@ auto ns::main_view::on_event(
   }
 
   return 0;
+}
+
+auto ns::main_view::on_paint() -> void
+{
+  ::PAINTSTRUCT ps;
+  ::HDC const hdc = ::BeginPaint(window_handle_, &ps);
+  ::RECT rc;
+  ::GetClientRect(window_handle_, &rc);
+  ::PatBlt(hdc, 0, 0, rc.right, rc.bottom, WHITENESS);
+  auto const nSel = TabCtrl_GetCurSel(hTab);
+  if (nSel >= 0)
+  {
+    TabCtrl_AdjustRect(hTab, FALSE, &rc);
+    ::BITMAP bm;
+    ::GetObject(hCap[nSel].hBm, sizeof(::BITMAP), &bm);
+    ::BitBlt(hdc, 0, rc.top, bm.bmWidth, bm.bmHeight, hCap[nSel].hDC, 0, 0, SRCCOPY);
+  }
+  ::EndPaint(window_handle_, &ps);
 }
 
 

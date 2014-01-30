@@ -29,6 +29,9 @@ namespace capture
           ::LPARAM param2) -> ::LRESULT;
 
     private:
+      auto on_paint() -> void;
+
+    private:
       ::HWND             window_handle_;
       HINSTANCE          hInst;
       HBITMAP            hBSEnt;
