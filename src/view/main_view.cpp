@@ -163,15 +163,8 @@ auto ns::main_view::on_event(
           break;
 
         case NM_RCLICK:
-          {
-            auto const hMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDR_TAB));
-            auto const hSub  = GetSubMenu(hMenu, 0);
-            POINT pt;
-            GetCursorPos(&pt);
-            TrackPopupMenu(hSub, TPM_LEFTALIGN, pt.x, pt.y, 0, window_handle_, nullptr);
-            DestroyMenu(hMenu);
-            break;
-          }
+          on_tab_right_clicked();
+          break;
       }
       break;
 
@@ -307,6 +300,17 @@ auto ns::main_view::on_destroy() -> void
   ::DestroyWindow(hTab);
   ::WriteMyProfile();
   ::PostQuitMessage(0);
+}
+
+
+auto ns::main_view::on_tab_right_clicked() -> void
+{
+  auto const hMenu = ::LoadMenu(hInst, MAKEINTRESOURCE(IDR_TAB));
+  auto const hSub  = ::GetSubMenu(hMenu, 0);
+  ::POINT pt;
+  ::GetCursorPos(&pt);
+  ::TrackPopupMenu(hSub, TPM_LEFTALIGN, pt.x, pt.y, 0, window_handle_, nullptr);
+  ::DestroyMenu(hMenu);
 }
 
 

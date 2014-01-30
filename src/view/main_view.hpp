@@ -34,6 +34,8 @@ namespace capture
       auto on_key_down(int key_code) -> void;
       auto on_destroy() -> void;
 
+      auto on_tab_right_clicked() -> void;
+
     private:
       ::HWND             window_handle_;
       HINSTANCE          hInst;
