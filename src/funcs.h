@@ -21,8 +21,6 @@ int SetTabText( HWND, int, char * );
 int GetTabText( HWND, int, char * );
 DCSET CreateDCSet( int, int );
 BOOL CngCurDir( void );
-BOOL ReadMyProfile( void );
-BOOL WriteMyProfile( void );
 
 int ShowOption( HWND );
 int ShowAbout( HWND );

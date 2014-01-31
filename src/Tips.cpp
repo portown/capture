@@ -9,12 +9,6 @@
 #include "funcs.h"
 
 
-extern int nCapKey;
-extern BOOL bCapCtrl;
-extern BOOL bCapShift;
-extern BOOL bCapAlt;
-
-
 namespace
 {
   bool GetSaveName(HWND, char*, char*, DWORD);
@@ -412,40 +406,6 @@ BOOL CngCurDir(void)
 
   if (!SetCurrentDirectory(sztName))
     return FALSE;
-
-  return TRUE;
-}
-
-// ê›íËì«Ç›çûÇ›
-BOOL ReadMyProfile(void)
-{
-  char szBuf[16];
-
-  GetPrivateProfileString("KEY", "CAPTURE", "5", szBuf, 16, "./capture.ini");
-  nCapKey = atoi(szBuf);
-  GetPrivateProfileString("KEY", "CAPSHIFT", "0", szBuf, 16, "./capture.ini");
-  bCapShift = ( BOOL )atoi(szBuf);
-  GetPrivateProfileString("KEY", "CAPCTRL", "0", szBuf, 16, "./capture.ini");
-  bCapCtrl = ( BOOL )atoi(szBuf);
-  GetPrivateProfileString("KEY", "CAPALT", "0", szBuf, 16, "./capture.ini");
-  bCapAlt = ( BOOL )atoi(szBuf);
-
-  return TRUE;
-}
-
-// ê›íËèëÇ´çûÇ›
-BOOL WriteMyProfile(void)
-{
-  char szBuf[16];
-
-  wsprintf(szBuf, "%d", nCapKey);
-  WritePrivateProfileString("KEY", "CAPTURE", szBuf, "./capture.ini");
-  wsprintf(szBuf, "%d", bCapCtrl);
-  WritePrivateProfileString("KEY", "CAPCTRL", szBuf, "./capture.ini");
-  wsprintf(szBuf, "%d", bCapShift);
-  WritePrivateProfileString("KEY", "CAPSHIFT", szBuf, "./capture.ini");
-  wsprintf(szBuf, "%d", bCapAlt);
-  WritePrivateProfileString("KEY", "CAPALT", szBuf, "./capture.ini");
 
   return TRUE;
 }

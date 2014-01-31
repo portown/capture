@@ -34,8 +34,11 @@ namespace
     VK_F11, VK_F12
   };
 
-  std::string load_string_from_resource(HINSTANCE instance_handle,
-      UINT resource_id);
+  auto load_string_from_resource(
+      ::HINSTANCE instance_handle,
+      ::UINT resource_id) -> std::string;
+  auto ReadMyProfile() -> void;
+  auto WriteMyProfile() -> void;
 }
 
 
@@ -342,5 +345,33 @@ namespace
     }
 
     return std::string{buffer.data()};
+  }
+
+  auto ReadMyProfile() -> void
+  {
+    char szBuf[16];
+
+    ::GetPrivateProfileString("KEY", "CAPTURE", "5", szBuf, 16, "./capture.ini");
+    nCapKey = atoi(szBuf);
+    ::GetPrivateProfileString("KEY", "CAPSHIFT", "0", szBuf, 16, "./capture.ini");
+    bCapShift = ( BOOL )atoi(szBuf);
+    ::GetPrivateProfileString("KEY", "CAPCTRL", "0", szBuf, 16, "./capture.ini");
+    bCapCtrl = ( BOOL )atoi(szBuf);
+    ::GetPrivateProfileString("KEY", "CAPALT", "0", szBuf, 16, "./capture.ini");
+    bCapAlt = ( BOOL )atoi(szBuf);
+  }
+
+  auto WriteMyProfile() -> void
+  {
+    char szBuf[16];
+
+    wsprintf(szBuf, "%d", nCapKey);
+    ::WritePrivateProfileString("KEY", "CAPTURE", szBuf, "./capture.ini");
+    wsprintf(szBuf, "%d", bCapCtrl);
+    ::WritePrivateProfileString("KEY", "CAPCTRL", szBuf, "./capture.ini");
+    wsprintf(szBuf, "%d", bCapShift);
+    ::WritePrivateProfileString("KEY", "CAPSHIFT", szBuf, "./capture.ini");
+    wsprintf(szBuf, "%d", bCapAlt);
+    ::WritePrivateProfileString("KEY", "CAPALT", szBuf, "./capture.ini");
   }
 }
