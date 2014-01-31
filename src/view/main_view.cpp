@@ -128,10 +128,8 @@ auto ns::main_view::on_event(
             RECT rc;
             GetClientRect(GetDesktopWindow(), &rc);
             BitBlt(hEntire, 0, 0, rc.right, rc.bottom, hSubEnt, 0, 0, SRCCOPY);
-            hCap.push_back(CreateDCSet(rcArea.right - rcArea.left, rcArea.bottom - rcArea.top));
-            BitBlt(hCap[nMax].hDC, 0, 0, rcArea.right - rcArea.left,
-                rcArea.bottom - rcArea.top, hSubEnt,
-                rcArea.left, rcArea.top, SRCCOPY);
+            hCap.push_back(CreateDCSet());
+            hCap.back().picture = model::picture::capture(hSubEnt, rcArea);
             AddTab(hTab, nMax);
             ++nMax;
             if (IsIconic(window_handle_))
@@ -234,9 +232,9 @@ auto ns::main_view::on_paint() -> void
   if (nSel >= 0)
   {
     TabCtrl_AdjustRect(hTab, FALSE, &rc);
-    ::BITMAP bm;
-    ::GetObject(hCap[nSel].hBm, sizeof(::BITMAP), &bm);
-    ::BitBlt(hdc, 0, rc.top, bm.bmWidth, bm.bmHeight, hCap[nSel].hDC, 0, 0, SRCCOPY);
+    auto const& picture = hCap[nSel].picture;
+    ::BitBlt(hdc, 0, rc.top, picture->width(), picture->height(),
+        picture->context_handle(), 0, 0, SRCCOPY);
   }
   ::EndPaint(window_handle_, &ps);
 }
@@ -288,7 +286,9 @@ auto ns::main_view::on_tab_right_clicked() -> void
 auto ns::main_view::on_menu_save() -> void
 {
   auto const nSel = TabCtrl_GetCurSel(hTab);
-  if (::SavePicture(window_handle_, hTab, nSel, hCap[nSel].hDC, hCap[nSel].hBm))
+  auto const& picture = hCap[nSel].picture;
+  if (::SavePicture(window_handle_, hTab, nSel,
+        picture->context_handle(), picture->bitmap_handle()))
     hCap[nSel].bSave = TRUE;
 }
 
@@ -304,7 +304,9 @@ auto ns::main_view::on_menu_close() -> void
     if (ret == IDCANCEL) return;
     if (ret == IDYES)
     {
-      ::SavePicture(window_handle_, hTab, nSel, hCap[nSel].hDC, hCap[nSel].hBm);
+      auto const& picture = hCap[nSel].picture;
+      ::SavePicture(window_handle_, hTab, nSel,
+          picture->context_handle(), picture->bitmap_handle());
     }
   }
   TabCtrl_DeleteItem(hTab, nSel);

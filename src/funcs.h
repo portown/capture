@@ -19,7 +19,7 @@ HWND CreateMyTab( HWND hWnd );
 int AddTab( HWND, int );
 int SetTabText( HWND, int, char * );
 int GetTabText( HWND, int, char * );
-DCSET CreateDCSet( int, int );
+DCSET CreateDCSet();
 
 int ShowOption( HWND );
 int ShowAbout( HWND );

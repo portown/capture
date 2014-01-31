@@ -380,11 +380,10 @@ int GetTabText(HWND hTab, int nSel, char* lpText)
 }
 
 // DCSET�̍쐬
-DCSET CreateDCSet(int w, int h)
+DCSET CreateDCSet()
 {
   DCSET DCSet;
 
-  InitSurface(nullptr, DCSet.hDC, DCSet.hBm, w, h);
   DCSet.bSave = FALSE;
 
   return DCSet;

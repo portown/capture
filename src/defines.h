@@ -3,6 +3,8 @@
 #ifndef DEFINITIONS_HEADER
 #define DEFINITIONS_HEADER
 
+#include "model/picture.hpp"
+
 
 // ==============================================
 // ’è‹`
@@ -12,8 +14,7 @@
 
 struct DCSET
 {
-	HDC hDC;
-	HBITMAP hBm;
+  std::shared_ptr<capture::model::picture> picture;
 	BOOL bSave;
 };
 
