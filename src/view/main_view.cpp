@@ -347,17 +347,38 @@ namespace
     return std::string{buffer.data()};
   }
 
+  auto profile_file_path() -> std::string
+  {
+    std::vector<char> buffer(MAX_PATH);
+    if (!::GetModuleFileName(nullptr, buffer.data(), buffer.size()))
+      throw std::runtime_error("GetModuleFileName failed"); // TODO handle the error
+
+    if (buffer.empty()) return {};
+
+    std::string path{buffer.begin(), buffer.end()};
+    auto const separator_position = path.find_last_of('\\');
+    if (separator_position == std::string::npos)
+      throw std::runtime_error("illegal module path");
+
+    path.replace(std::next(path.begin(), separator_position + 1), path.end(), "capture.ini");
+
+    return path;
+  }
+
   auto ReadMyProfile() -> void
   {
     char szBuf[16];
 
-    ::GetPrivateProfileString("KEY", "CAPTURE", "5", szBuf, 16, "./capture.ini");
+    auto const path = profile_file_path();
+    auto const path_str = path.data();
+
+    ::GetPrivateProfileString("KEY", "CAPTURE", "5", szBuf, 16, path_str);
     nCapKey = atoi(szBuf);
-    ::GetPrivateProfileString("KEY", "CAPSHIFT", "0", szBuf, 16, "./capture.ini");
+    ::GetPrivateProfileString("KEY", "CAPSHIFT", "0", szBuf, 16, path_str);
     bCapShift = ( BOOL )atoi(szBuf);
-    ::GetPrivateProfileString("KEY", "CAPCTRL", "0", szBuf, 16, "./capture.ini");
+    ::GetPrivateProfileString("KEY", "CAPCTRL", "0", szBuf, 16, path_str);
     bCapCtrl = ( BOOL )atoi(szBuf);
-    ::GetPrivateProfileString("KEY", "CAPALT", "0", szBuf, 16, "./capture.ini");
+    ::GetPrivateProfileString("KEY", "CAPALT", "0", szBuf, 16, path_str);
     bCapAlt = ( BOOL )atoi(szBuf);
   }
 
@@ -365,13 +386,16 @@ namespace
   {
     char szBuf[16];
 
+    auto const path = profile_file_path();
+    auto const path_str = path.data();
+
     wsprintf(szBuf, "%d", nCapKey);
-    ::WritePrivateProfileString("KEY", "CAPTURE", szBuf, "./capture.ini");
+    ::WritePrivateProfileString("KEY", "CAPTURE", szBuf, path_str);
     wsprintf(szBuf, "%d", bCapCtrl);
-    ::WritePrivateProfileString("KEY", "CAPCTRL", szBuf, "./capture.ini");
+    ::WritePrivateProfileString("KEY", "CAPCTRL", szBuf, path_str);
     wsprintf(szBuf, "%d", bCapShift);
-    ::WritePrivateProfileString("KEY", "CAPSHIFT", szBuf, "./capture.ini");
+    ::WritePrivateProfileString("KEY", "CAPSHIFT", szBuf, path_str);
     wsprintf(szBuf, "%d", bCapAlt);
-    ::WritePrivateProfileString("KEY", "CAPALT", szBuf, "./capture.ini");
+    ::WritePrivateProfileString("KEY", "CAPALT", szBuf, path_str);
   }
 }
