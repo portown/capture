@@ -389,23 +389,3 @@ DCSET CreateDCSet(int w, int h)
 
   return DCSet;
 }
-
-// カレントディレクトリの修正
-BOOL CngCurDir(void)
-{
-  TCHAR sztName[MAX_PATH];
-  char* lpDir;
-
-  if (!GetModuleFileName(nullptr, sztName, MAX_PATH))
-    return FALSE;
-
-  if (!(lpDir = strrchr(sztName, '\\')))
-    return FALSE;
-
-  lstrcpy(lpDir, "");
-
-  if (!SetCurrentDirectory(sztName))
-    return FALSE;
-
-  return TRUE;
-}

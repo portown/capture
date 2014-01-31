@@ -7,7 +7,6 @@
 #include "view/main_view.hpp"
 
 #include "resource.h"
-#include "funcs.h"
 
 
 namespace
@@ -28,8 +27,6 @@ int WINAPI WinMain(HINSTANCE hCurInst, HINSTANCE, LPSTR, int nCmd)
   CreateMutex(nullptr, FALSE, "jp.portown.capture");
   if (GetLastError() == ERROR_ALREADY_EXISTS)
     return 0;
-
-  CngCurDir();
 
   constexpr auto main_class_name = "main";
   if (!InitApp(hCurInst, main_class_name))
