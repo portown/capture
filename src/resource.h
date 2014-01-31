@@ -21,3 +21,6 @@
 
 #define IDS_MSG_NOT_SAVED               10000
 #define IDS_MSG_NOT_SAVED_TITLE         10001
+#define IDS_SAVE_TITLE                  10002
+#define IDS_SAVE_BMP_NAME               10003
+#define IDS_SAVE_PNG_NAME               10004

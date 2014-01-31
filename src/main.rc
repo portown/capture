@@ -133,6 +133,9 @@ STRINGTABLE
 {
   IDS_MSG_NOT_SAVED, "画像が保存されていません。\n保存しますか？"
   IDS_MSG_NOT_SAVED_TITLE, "確認"
+  IDS_SAVE_TITLE, "画像を保存"
+  IDS_SAVE_BMP_NAME, "BMPファイル(*.bmp)"
+  IDS_SAVE_PNG_NAME, "PNGファイル(*.png)"
 }
 
 

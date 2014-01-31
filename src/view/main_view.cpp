@@ -2,11 +2,14 @@
 
 #include "main_view.hpp"
 
+#include <algorithm>
 #include <iterator>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 #include <boost/exception/all.hpp>
+#include <boost/optional.hpp>
 
 #include <commctrl.h>
 
@@ -39,6 +42,8 @@ namespace
       ::UINT resource_id) -> std::string;
   auto ReadMyProfile() -> void;
   auto WriteMyProfile() -> void;
+  auto GetSaveName(HWND)
+    -> boost::optional<std::pair<std::string, std::string>>;
 }
 
 
@@ -287,9 +292,16 @@ auto ns::main_view::on_menu_save() -> void
 {
   auto const nSel = TabCtrl_GetCurSel(hTab);
   auto const& picture = hCap[nSel].picture;
-  if (::SavePicture(window_handle_, hTab, nSel,
+
+  auto const name_title = GetSaveName(window_handle_);
+  if (!name_title) return;
+
+  if (::SavePicture(name_title->first.data(),
         picture->context_handle(), picture->bitmap_handle()))
+  {
     hCap[nSel].bSave = TRUE;
+    SetTabText(hTab, nSel, name_title->second.data());
+  }
 }
 
 auto ns::main_view::on_menu_close() -> void
@@ -305,7 +317,11 @@ auto ns::main_view::on_menu_close() -> void
     if (ret == IDYES)
     {
       auto const& picture = hCap[nSel].picture;
-      ::SavePicture(window_handle_, hTab, nSel,
+
+      auto const name_title = GetSaveName(window_handle_);
+      if (!name_title) return;
+
+      ::SavePicture(name_title->first.data(),
           picture->context_handle(), picture->bitmap_handle());
     }
   }
@@ -399,5 +415,52 @@ namespace
     ::WritePrivateProfileString("KEY", "CAPSHIFT", szBuf, path_str);
     wsprintf(szBuf, "%d", bCapAlt);
     ::WritePrivateProfileString("KEY", "CAPALT", szBuf, path_str);
+  }
+
+  auto GetSaveName(HWND hWnd)
+    -> boost::optional<std::pair<std::string, std::string>>
+  {
+    ::OPENFILENAME ofn;
+
+    std::vector<char> path_buffer(MAX_PATH);
+    std::vector<char> title_buffer(MAX_PATH);
+
+    auto const instance_handle = reinterpret_cast< ::HINSTANCE>(::GetWindowLongPtr(hWnd, GWLP_HINSTANCE));
+    auto const title = load_string_from_resource(instance_handle, IDS_SAVE_TITLE);
+
+    auto const bmp_label = load_string_from_resource(instance_handle, IDS_SAVE_BMP_NAME);
+    std::string const bmp_filter{"*.bmp"};
+    auto const png_label = load_string_from_resource(instance_handle, IDS_SAVE_PNG_NAME);
+    std::string const png_filter{"*.png"};
+    std::vector<char> filter;
+    std::copy(bmp_label.begin(), bmp_label.end(), std::back_inserter(filter));
+    filter.push_back('\0');
+    std::copy(bmp_filter.begin(), bmp_filter.end(), std::back_inserter(filter));
+    filter.push_back('\0');
+    std::copy(png_label.begin(), png_label.end(), std::back_inserter(filter));
+    filter.push_back('\0');
+    std::copy(png_filter.begin(), png_filter.end(), std::back_inserter(filter));
+    filter.push_back('\0');
+    filter.push_back('\0');
+
+    ZeroMemory(&ofn, sizeof(OPENFILENAME));
+    ofn.lStructSize    = sizeof(OPENFILENAME);
+    ofn.hwndOwner      = hWnd;
+    ofn.lpstrFilter    = filter.data();
+    ofn.lpstrFile      = path_buffer.data();
+    ofn.lpstrFileTitle = title_buffer.data();
+    ofn.nFilterIndex   = 2;
+    ofn.nMaxFile       = path_buffer.size();
+    ofn.nMaxFileTitle  = title_buffer.size();
+    ofn.Flags          = OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
+    ofn.lpstrDefExt    = "png";
+    ofn.lpstrTitle     = title.data();
+
+    if (!::GetSaveFileName(&ofn)) return {};
+
+    std::string path{path_buffer.begin(), path_buffer.end()};
+    std::string file_title{title_buffer.begin(), title_buffer.end()};
+
+    return std::make_pair(std::move(path), std::move(file_title));
   }
 }

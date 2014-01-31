@@ -11,9 +11,8 @@
 
 namespace
 {
-  bool GetSaveName(HWND, char*, char*, DWORD);
-  bool SaveAsBmp(HDC, HBITMAP, char*);
-  bool SaveAsPng(HDC, HBITMAP, char*);
+  bool SaveAsBmp(HDC, HBITMAP, char const*);
+  bool SaveAsPng(HDC, HBITMAP, char const*);
 }
 
 
@@ -100,17 +99,12 @@ int InitSurface(HWND hWnd, HDC& hDC, HBITMAP& hBm, int w, int h)
 }
 
 // 画像保存
-BOOL SavePicture(HWND hWnd, HWND hTab, int nSel, HDC hDC, HBITMAP hBm)
+BOOL SavePicture(char const* szFName, HDC hDC, HBITMAP hBm)
 {
   BITMAP Bm;
-  char   szFName[MAX_PATH];
-  char   szTitle[MAX_PATH];
 
   GetObject(hBm, sizeof(BITMAP), &Bm);
   if (Bm.bmWidth == 1)
-    return FALSE;
-
-  if (!GetSaveName(hWnd, szFName, szTitle, sizeof(szFName)))
     return FALSE;
 
   if (!lstrcmp(&szFName[lstrlen(szFName) - 4], ".bmp"))
@@ -119,15 +113,13 @@ BOOL SavePicture(HWND hWnd, HWND hTab, int nSel, HDC hDC, HBITMAP hBm)
   if (!lstrcmp(&szFName[lstrlen(szFName) - 4], ".png"))
     SaveAsPng(hDC, hBm, szFName);
 
-  SetTabText(hTab, nSel, szTitle);
-
   return TRUE;
 }
 
 namespace
 {
   // BMP保存
-  bool SaveAsBmp(HDC hDC, HBITMAP hBm, char* szFName)
+  bool SaveAsBmp(HDC hDC, HBITMAP hBm, char const* szFName)
   {
     BITMAPFILEHEADER bf;
     BITMAPINFO       bi;
@@ -180,7 +172,7 @@ namespace
   }
 
   // PNG保存
-  bool WritePng(char* szFName, LPBYTE lpScBits, int Width, int Height)
+  bool WritePng(char const* szFName, LPBYTE lpScBits, int Width, int Height)
   {
     FILE*       fp;
     png_structp lpps;
@@ -255,7 +247,7 @@ namespace
   }
 
   // PNG保存
-  bool SaveAsPng(HDC hDC, HBITMAP hBm, char* szFName)
+  bool SaveAsPng(HDC hDC, HBITMAP hBm, char const* szFName)
   {
     BITMAPINFO bi;
     HGLOBAL    hBits;
@@ -283,32 +275,6 @@ namespace
 
     GlobalUnlock(hBits);
     GlobalFree(hBits);
-
-    return true;
-  }
-
-  // 保存名取得
-  bool GetSaveName(HWND hWnd, char* szFName, char* szTitle, DWORD dwSize)
-  {
-    OPENFILENAME ofn;
-
-    lstrcpy(szFName, "");
-
-    ZeroMemory(&ofn, sizeof(OPENFILENAME));
-    ofn.lStructSize    = sizeof(OPENFILENAME);
-    ofn.hwndOwner      = hWnd;
-    ofn.lpstrFilter    = "BMPファイル(*.bmp)\0*.bmp\0PNGファイル(*.png)\0*.png\0\0";
-    ofn.lpstrFile      = szFName;
-    ofn.lpstrFileTitle = szTitle;
-    ofn.nFilterIndex   = 2;
-    ofn.nMaxFile       = dwSize;
-    ofn.nMaxFileTitle  = MAX_PATH;
-    ofn.Flags          = OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
-    ofn.lpstrDefExt    = "png";
-    ofn.lpstrTitle     = "画像を保存";
-
-    if (!GetSaveFileName(&ofn))
-      return false;
 
     return true;
   }
@@ -356,13 +322,13 @@ int AddTab(HWND hTab, int nMax)
 }
 
 // タブ名の変更
-int SetTabText(HWND hTab, int nSel, char* lpText)
+int SetTabText(HWND hTab, int nSel, char const* lpText)
 {
   TCITEM ti;
 
   ZeroMemory(&ti, sizeof(TCITEM));
   ti.mask    = TCIF_TEXT;
-  ti.pszText = lpText;
+  ti.pszText = const_cast<char*>(lpText);
   TabCtrl_SetItem(hTab, nSel, &ti);
 
   return 1;
