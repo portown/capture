@@ -1,5 +1,11 @@
 // Tips.cpp
 
+#include <algorithm>
+#include <cstdio>
+#include <fstream>
+#include <memory>
+#include <vector>
+
 #include <windows.h>
 #include <commctrl.h>
 
@@ -118,130 +124,99 @@ BOOL SavePicture(char const* szFName, HDC hDC, HBITMAP hBm)
 
 namespace
 {
+  constexpr auto count_bits(::BITMAP const& bitmap) -> ::DWORD
+  {
+    return (((bitmap.bmWidth * bitmap.bmBitsPixel + 31) & ~31) >> 3) * bitmap.bmHeight;
+  }
+
   // BMP•Û‘¶
   bool SaveAsBmp(HDC hDC, HBITMAP hBm, char const* szFName)
   {
-    BITMAPFILEHEADER bf;
-    BITMAPINFO       bi;
-    HGLOBAL          hBits;
-    BITMAP           Bm;
-    HANDLE           hFile;
-    LPBYTE           lpBits;
-    DWORD            dwBmSize;
-    DWORD            dwWritten;
+    ::BITMAP Bm;
+    ::GetObject(hBm, sizeof(::BITMAP), &Bm);
 
-    GetObject(hBm, sizeof(BITMAP), &Bm);
-
-    dwBmSize = ((((Bm.bmWidth * Bm.bmBitsPixel) + 31) & ~31) >> 3) * Bm.bmHeight;
-
-    ZeroMemory(&bf, sizeof(BITMAPFILEHEADER));
-    bf.bfType    = MAKEWORD('B', 'M');
-    bf.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-    bf.bfSize    = dwBmSize + bf.bfOffBits;
-
-    ZeroMemory(&bi.bmiHeader, sizeof(BITMAPINFOHEADER));
+    ::BITMAPINFO bi;
+    ::ZeroMemory(&bi.bmiHeader, sizeof(::BITMAPINFOHEADER));
     bi.bmiHeader.biBitCount = 24;
     bi.bmiHeader.biWidth    = Bm.bmWidth;
     bi.bmiHeader.biHeight   = Bm.bmHeight;
-    bi.bmiHeader.biSize     = sizeof(BITMAPINFOHEADER);
+    bi.bmiHeader.biSize     = sizeof(::BITMAPINFOHEADER);
     bi.bmiHeader.biPlanes   = 1;
 
-    hBits  = GlobalAlloc(GHND, dwBmSize);
-    lpBits = ( LPBYTE )GlobalLock(hBits);
+    std::vector<unsigned char> bits(count_bits(Bm));
 
-    GetDIBits(hDC, hBm, 0, Bm.bmHeight, lpBits, &bi, DIB_RGB_COLORS);
+    ::GetDIBits(hDC, hBm, 0, Bm.bmHeight, bits.data(), &bi, DIB_RGB_COLORS);
 
-    hFile = CreateFile(szFName, GENERIC_WRITE, 0, nullptr,
-                       CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (hFile == INVALID_HANDLE_VALUE)
+    std::ofstream of(szFName, std::ios::out | std::ios::binary | std::ios::trunc);
+    if (!of)
     {
       Mes("ƒtƒ@ƒCƒ‹‚Ì•Û‘¶‚ÉŽ¸”s‚µ‚Ü‚µ‚½", nullptr, MB_OK | MB_ICONERROR);
       return false;
     }
 
-    WriteFile(hFile, &bf, sizeof(BITMAPFILEHEADER), &dwWritten, nullptr);
-    WriteFile(hFile, &bi.bmiHeader, sizeof(BITMAPINFOHEADER), &dwWritten, nullptr);
-    WriteFile(hFile, lpBits, dwBmSize, &dwWritten, nullptr);
+    ::BITMAPFILEHEADER bf;
+    ::ZeroMemory(&bf, sizeof(::BITMAPFILEHEADER));
+    bf.bfType    = MAKEWORD('B', 'M');
+    bf.bfOffBits = sizeof(::BITMAPFILEHEADER) + sizeof(::BITMAPINFOHEADER);
+    bf.bfSize    = bits.size() + bf.bfOffBits;
 
-    CloseHandle(hFile);
+    of.write(reinterpret_cast<char const*>(&bf), sizeof(bf));
+    of.write(reinterpret_cast<char const*>(&bi.bmiHeader), sizeof(bi.bmiHeader));
+    of.write(reinterpret_cast<char const*>(bits.data()), bits.size());
 
-    GlobalUnlock(hBits);
-    GlobalFree(hBits);
-
-    return true;
+    return of;
   }
 
   // PNG•Û‘¶
-  bool WritePng(char const* szFName, LPBYTE lpScBits, int Width, int Height)
+  bool WritePng(char const* szFName, LPBYTE lpScBits, int width, int height)
   {
-    FILE*       fp;
-    png_structp lpps;
-    png_bytepp  lpBits;
-    png_infop   lppi;
-    int         i, j;
-    char*       src, * dest;
-    int         bmp_line_byts;
-
-    bmp_line_byts = ((Width * 3 + 3) / 4) * 4;
-    lpBits        = ( png_bytepp )malloc(Height * sizeof(LPBYTE));
-    for (i = 0; i < Height; i++)
+    auto const bmp_line_byts = ((width * 3 + 3) / 4) * 4;
+    std::vector<png_bytep> bits(height);
+    for (auto i = 0; i < height; i++)
     {
-      lpBits[i] = ( png_bytep )malloc(Width * 3);
-      dest      = ( char* )lpBits[i];
-      src       = ( char* )lpScBits + ((Height - 1 - i) * bmp_line_byts);
-      for (j = 0; j < Width; j++)
+      bits[i] = new png_byte[width * 3];
+      auto dest = bits[i];
+      auto src  = lpScBits + ((height - 1 - i) * bmp_line_byts);
+      for (auto j = 0; j < width; j++)
       {
         *dest++ = *(src + 2);
         *dest++ = *(src + 1);
         *dest++ = *src;
-        src    += 3;
+        src += 3;
       }
     }
 
-    if (!(fp = fopen(szFName, "wb")))
-    {
-      fclose(fp);
-      return false;
-    }
+    std::unique_ptr<FILE, decltype(&std::fclose)> const fp(std::fopen(szFName, "wb"), &std::fclose);
+    if (!fp) return false;
 
-    lpps = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-    if (!lpps)
-    {
-      fclose(fp);
-      return false;
-    }
+    auto lpps = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+    if (!lpps) return false;
 
-    lppi = png_create_info_struct(lpps);
+    auto lppi = ::png_create_info_struct(lpps);
     if (!lppi)
     {
-      png_destroy_write_struct(&lpps, ( png_infopp )nullptr);
-      fclose(fp);
+      ::png_destroy_write_struct(&lpps, nullptr);
       return false;
     }
 
     if (setjmp(png_jmpbuf(lpps)))
     {
-      png_destroy_write_struct(&lpps, &lppi);
-      fclose(fp);
+      ::png_destroy_write_struct(&lpps, &lppi);
       return false;
     }
 
-    png_init_io(lpps, fp);
+    ::png_init_io(lpps, fp.get());
 
-    png_set_IHDR(lpps, lppi, Width, Height, 8, PNG_COLOR_TYPE_RGB,
+    ::png_set_IHDR(lpps, lppi, width, height, 8, PNG_COLOR_TYPE_RGB,
                  PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
-    png_write_info(lpps, lppi);
-    png_write_image(lpps, lpBits);
-    png_write_end(lpps, lppi);
+    ::png_write_info(lpps, lppi);
+    ::png_write_image(lpps, bits.data());
+    ::png_write_end(lpps, lppi);
 
-    png_destroy_write_struct(&lpps, &lppi);
+    ::png_destroy_write_struct(&lpps, &lppi);
 
-    fclose(fp);
-
-    for (i = 0; i < Height; i++)
-      delete [] lpBits[i];
-    delete [] lpBits;
+    std::for_each(bits.begin(), bits.end(), [](png_bytep p) { delete[] p; });
 
     return true;
   }
@@ -249,32 +224,22 @@ namespace
   // PNG•Û‘¶
   bool SaveAsPng(HDC hDC, HBITMAP hBm, char const* szFName)
   {
-    BITMAPINFO bi;
-    HGLOBAL    hBits;
-    LPBYTE     lpBits;
-    BITMAP     Bm;
-    DWORD      dwBmSize;
+    ::BITMAP Bm;
+    ::GetObject(hBm, sizeof(::BITMAP), &Bm);
 
-    GetObject(hBm, sizeof(BITMAP), &Bm);
-
-    dwBmSize = ((((Bm.bmWidth * Bm.bmBitsPixel) + 31) & ~31) >> 3) * Bm.bmHeight;
-
-    ZeroMemory(&bi.bmiHeader, sizeof(BITMAPINFOHEADER));
+    ::BITMAPINFO bi;
+    ::ZeroMemory(&bi.bmiHeader, sizeof(::BITMAPINFOHEADER));
     bi.bmiHeader.biBitCount = 24;
     bi.bmiHeader.biWidth    = Bm.bmWidth;
     bi.bmiHeader.biHeight   = Bm.bmHeight;
-    bi.bmiHeader.biSize     = sizeof(BITMAPINFOHEADER);
+    bi.bmiHeader.biSize     = sizeof(::BITMAPINFOHEADER);
     bi.bmiHeader.biPlanes   = 1;
 
-    hBits  = GlobalAlloc(GHND, dwBmSize);
-    lpBits = ( LPBYTE )GlobalLock(hBits);
+    std::vector<unsigned char> bits(count_bits(Bm));
 
-    GetDIBits(hDC, hBm, 0, Bm.bmHeight, lpBits, &bi, DIB_RGB_COLORS);
+    ::GetDIBits(hDC, hBm, 0, Bm.bmHeight, bits.data(), &bi, DIB_RGB_COLORS);
 
-    WritePng(szFName, lpBits, Bm.bmWidth, Bm.bmHeight);
-
-    GlobalUnlock(hBits);
-    GlobalFree(hBits);
+    WritePng(szFName, bits.data(), Bm.bmWidth, Bm.bmHeight);
 
     return true;
   }
