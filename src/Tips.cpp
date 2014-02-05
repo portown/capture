@@ -168,24 +168,8 @@ namespace
   }
 
   // PNGï€ë∂
-  bool WritePng(char const* szFName, LPBYTE lpScBits, int width, int height)
+  bool WritePng(char const* szFName, unsigned char const* lpScBits, int width, int height)
   {
-    auto const bmp_line_byts = ((width * 3 + 3) / 4) * 4;
-    std::vector<png_bytep> bits(height);
-    for (auto i = 0; i < height; i++)
-    {
-      bits[i] = new png_byte[width * 3];
-      auto dest = bits[i];
-      auto src  = lpScBits + ((height - 1 - i) * bmp_line_byts);
-      for (auto j = 0; j < width; j++)
-      {
-        *dest++ = *(src + 2);
-        *dest++ = *(src + 1);
-        *dest++ = *src;
-        src += 3;
-      }
-    }
-
     std::unique_ptr<FILE, decltype(&std::fclose)> const fp(std::fopen(szFName, "wb"), &std::fclose);
     if (!fp) return false;
 
@@ -211,12 +195,26 @@ namespace
                  PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
     ::png_write_info(lpps, lppi);
-    ::png_write_image(lpps, bits.data());
+
+    // width * 3 Çâ∫âÒÇÁÇ»Ç¢ç≈è¨ÇÃ 4 ÇÃî{êî
+    auto const bytes_per_line = ((width * 3 + 3) / 4) * 4;
+    for (auto i = 0; i < height; ++i)
+    {
+      std::vector<png_byte> bits(width * 3);
+      auto const* src = lpScBits + (height - 1 - i) * bytes_per_line;
+      for (auto it = bits.begin(); it != bits.end();)
+      {
+        *it++ = src[2];
+        *it++ = src[1];
+        *it++ = src[0];
+        src += 3;
+      }
+      ::png_write_row(lpps, bits.data());
+    }
+
     ::png_write_end(lpps, lppi);
 
     ::png_destroy_write_struct(&lpps, &lppi);
-
-    std::for_each(bits.begin(), bits.end(), [](png_bytep p) { delete[] p; });
 
     return true;
   }
