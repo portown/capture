@@ -25,8 +25,3 @@
 * zlib
 * Boost.Exception
 * Boost.Optional
-
-
-## ToDo
-
-* もう少し名前をヒネる
