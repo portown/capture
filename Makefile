@@ -7,7 +7,7 @@ else
 	CXXFLAGS += -g -O0
 endif
 
-CXXFLAGS += -pipe -std=c++11 -Wall -Wextra -pedantic-errors
+CXXFLAGS += -pipe -std=c++17 -Wall -Wextra -pedantic-errors
 CXXFLAGS += -I$(BOOST_ROOT)\include -Icapdll -D_WIN32_IE=0x0300
 
 MAIN_BIN = capture.exe
