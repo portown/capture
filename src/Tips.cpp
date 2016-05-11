@@ -164,7 +164,7 @@ namespace
     of.write(reinterpret_cast<char const*>(&bi.bmiHeader), sizeof(bi.bmiHeader));
     of.write(reinterpret_cast<char const*>(bits.data()), bits.size());
 
-    return of;
+    return !!of;
   }
 
   // PNG保存

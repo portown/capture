@@ -108,7 +108,7 @@ namespace
     {
       auto const args = *reinterpret_cast<LPCREATESTRUCT>(lp);
       auto& view = *reinterpret_cast<view::main_view*>(args.lpCreateParams);
-      ::SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast< ::LONG>(&view));
+      ::SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast< ::LONG_PTR>(&view));
       return view.on_create(hWnd, args);
     }
 
