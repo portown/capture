@@ -7,6 +7,7 @@
 #include "string_view.hpp"
 
 #include "view/main_view.hpp"
+#include "win_util.hpp"
 
 #include "resource.h"
 
@@ -51,7 +52,7 @@ namespace
         wc.cbClsExtra    = 0;
         wc.cbSize        = sizeof(WNDCLASSEX);
         wc.cbWndExtra    = sizeof(void*);
-        wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+        wc.hbrBackground = win::get_stock_object(win::white_brush);
         wc.hCursor       = static_cast<HCURSOR>(LoadImage(nullptr, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
         wc.hIcon         = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(IDI_CAPTURE), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
         wc.hIconSm       = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(IDI_CAPTURE), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED));

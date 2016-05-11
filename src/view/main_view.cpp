@@ -15,6 +15,7 @@
 #include <capdll.h>
 
 #include "../optional.hpp"
+#include "../win_util.hpp"
 
 #include "../resource.h"
 #include "../funcs.h"
@@ -81,8 +82,7 @@ auto ns::main_view::on_event(
                         POINT pt;
                         GetCursorPos(&pt);
                         SetRect(&rcArea, pt.x, pt.y, pt.x, pt.y);
-                        RECT rc;
-                        GetClientRect(GetDesktopWindow(), &rc);
+                        auto const rc = win::get_client_rect(GetDesktopWindow());
                         InitSurface(nullptr, hSubEnt, hBSEnt, rc.right, rc.bottom);
                         BitBlt(hSubEnt, 0, 0, rc.right, rc.bottom, hEntire, 0, 0, SRCCOPY);
                         lstrcpy(szSize, "");
@@ -131,8 +131,7 @@ auto ns::main_view::on_event(
                         ReleaseDC(window_handle_, hSubEnt);
 
                         SortRect(&rcArea);
-                        RECT rc;
-                        GetClientRect(GetDesktopWindow(), &rc);
+                        auto const rc = win::get_client_rect(GetDesktopWindow());
                         BitBlt(hEntire, 0, 0, rc.right, rc.bottom, hSubEnt, 0, 0, SRCCOPY);
                         hCap.push_back(CreateDCSet());
                         hCap.back().picture = model::picture::capture(hSubEnt, rcArea);
@@ -155,8 +154,7 @@ auto ns::main_view::on_event(
                     {
                         bDrop = false;
 
-                        RECT rc;
-                        GetClientRect(GetDesktopWindow(), &rc);
+                        auto const rc = win::get_client_rect(GetDesktopWindow());
                         BitBlt(hEntire, 0, 0, rc.right, rc.bottom, hSubEnt, 0, 0, SRCCOPY);
                     }
                     break;
@@ -231,8 +229,7 @@ auto ns::main_view::on_paint() -> void
 {
     ::PAINTSTRUCT ps;
     ::HDC const hdc = ::BeginPaint(window_handle_, &ps);
-    ::RECT rc;
-    ::GetClientRect(window_handle_, &rc);
+    auto const rc = win::get_client_rect(window_handle_);
     ::PatBlt(hdc, 0, 0, rc.right, rc.bottom, WHITENESS);
     auto const nSel = TabCtrl_GetCurSel(hTab);
     if (nSel >= 0)
@@ -247,8 +244,7 @@ auto ns::main_view::on_paint() -> void
 
 auto ns::main_view::on_size(::WORD const new_width) -> void
 {
-    ::RECT rc;
-    ::GetClientRect(window_handle_, &rc);
+    auto const rc = win::get_client_rect(window_handle_);
     TabCtrl_AdjustRect(hTab, FALSE, &rc);
     ::MoveWindow(hTab, 0, 0, new_width, rc.top, TRUE);
 }
@@ -337,8 +333,7 @@ auto ns::main_view::on_menu_close() -> void
         TabCtrl_SetCurSel(hTab, 0);
     }
     --nMax;
-    ::RECT rc;
-    ::GetClientRect(window_handle_, &rc);
+    auto const rc = win::get_client_rect(window_handle_);
     ::SendMessage(window_handle_, WM_SIZE, 0, MAKELPARAM(rc.right, rc.bottom));
     ::InvalidateRect(window_handle_, nullptr, FALSE);
     if (nMax == 0)
