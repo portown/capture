@@ -4,6 +4,8 @@
 
 #include <Windows.h>
 
+#include "string_view.hpp"
+
 #include "view/main_view.hpp"
 
 #include "resource.h"
@@ -15,8 +17,8 @@ namespace
 
     // 関数の宣言
     LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-    bool             InitApp(HINSTANCE, char const*);
-    bool             InitInstance(HINSTANCE, char const*, int, view::main_view&);
+    bool             InitApp(HINSTANCE, std::string_view);
+    bool             InitInstance(HINSTANCE, std::string_view, int, view::main_view&);
     int Run();
 }
 
@@ -42,7 +44,7 @@ int WINAPI WinMain(HINSTANCE hCurInst, HINSTANCE, LPSTR, int nCmd)
 namespace
 {
     // ウィンドウクラスの登録
-    bool InitApp(HINSTANCE hInst, char const* lpCls)
+    bool InitApp(HINSTANCE hInst, std::string_view const class_name)
     {
         WNDCLASSEX wc;
 
@@ -55,7 +57,7 @@ namespace
         wc.hIconSm       = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(IDI_CAPTURE), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
         wc.hInstance     = hInst;
         wc.lpfnWndProc   = WndProc;
-        wc.lpszClassName = lpCls;
+        wc.lpszClassName = class_name.data();
         wc.lpszMenuName  = MAKEINTRESOURCE(IDR_MAIN);
         wc.style         = CS_HREDRAW | CS_VREDRAW;
 
@@ -63,10 +65,10 @@ namespace
     }
 
     // ウィンドウの作成
-    bool InitInstance(HINSTANCE hInst, char const* lpCls, int nCmd, view::main_view& view)
+    bool InitInstance(HINSTANCE hInst, std::string_view const class_name, int nCmd, view::main_view& view)
     {
         HWND hWnd = CreateWindowEx(0,
-                lpCls,
+                class_name.data(),
                 "Capture",
                 WS_OVERLAPPEDWINDOW,
                 CW_USEDEFAULT,
