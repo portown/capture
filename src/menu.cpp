@@ -22,7 +22,7 @@ namespace
 }
 
 
-// ƒIƒvƒVƒ‡ƒ“ƒ_ƒCƒAƒƒO•\Ž¦
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 int ShowOption(HWND hWnd)
 {
   HINSTANCE hInst = reinterpret_cast<HINSTANCE>(GetWindowLongPtr(hWnd, GWLP_HINSTANCE));
@@ -32,7 +32,7 @@ int ShowOption(HWND hWnd)
   return 1;
 }
 
-// ƒo[ƒWƒ‡ƒ“î•ñƒ_ƒCƒAƒƒO•\Ž¦
+// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 int ShowAbout(HWND hWnd)
 {
   HINSTANCE hInst = reinterpret_cast<HINSTANCE>(GetWindowLongPtr(hWnd, GWLP_HINSTANCE));
@@ -44,7 +44,7 @@ int ShowAbout(HWND hWnd)
 
 namespace
 {
-  // ƒIƒvƒVƒ‡ƒ“ƒ_ƒCƒAƒƒOƒvƒƒV[ƒWƒƒ
+  // ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
   INT_PTR CALLBACK OptionProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM)
   {
     switch (msg)
@@ -83,7 +83,7 @@ namespace
     return TRUE;
   }
 
-  // ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌƒZƒbƒg
+  // ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®ã‚»ãƒƒãƒˆ
   int SetCombo(HWND hDlg)
   {
     LPCTSTR szList[LISTMAX] = { "ESCAPE", "SPACE", "PAGEDOWN", "PAGEUP", "END", "HOME",
@@ -102,7 +102,7 @@ namespace
     return 1;
   }
 
-  // ƒo[ƒWƒ‡ƒ“î•ñƒ_ƒCƒAƒƒOƒvƒƒV[ƒWƒƒ
+  // ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
   INT_PTR CALLBACK AboutProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM)
   {
     switch (msg)

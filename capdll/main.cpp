@@ -3,7 +3,7 @@
 #include <windows.h>
 #include "capdll.h"
 
-// 曄悢偺愰尵
+// 澶夋暟銇瑷�
 #pragma data_seg( "CAP_DATA" )
 HHOOK hMouseHook = 0;
 HWND  hMse       = 0;
@@ -16,7 +16,7 @@ namespace
 }
 
 
-// 僄儞僩儕億僀儞僩
+// 銈ㄣ兂銉堛儶銉濄偆銉炽儓
 BOOL WINAPI DllMain(HINSTANCE hCurInst, DWORD dwReason, LPVOID)
 {
   switch (dwReason)
@@ -29,7 +29,7 @@ BOOL WINAPI DllMain(HINSTANCE hCurInst, DWORD dwReason, LPVOID)
   return TRUE;
 }
 
-// 儅僂僗僼僢僋奐巒
+// 銉炪偊銈广儠銉冦偗闁嬪
 EXPORT int SetMouseHook(HWND hDst, UINT uTp)
 {
   if (uTp > SMH_MAX)
@@ -45,13 +45,13 @@ EXPORT int SetMouseHook(HWND hDst, UINT uTp)
   return 1;
 }
 
-// 儅僂僗僼僢僋専嵏
+// 銉炪偊銈广儠銉冦偗妞滄熁
 EXPORT bool IsMouseHooking()
 {
   return (hMouseHook != nullptr);
 }
 
-// 儅僂僗僼僢僋嶍彍
+// 銉炪偊銈广儠銉冦偗鍓婇櫎
 EXPORT int ResetMouseHook()
 {
   if (!UnhookWindowsHookEx(hMouseHook))
@@ -62,7 +62,7 @@ EXPORT int ResetMouseHook()
   return 1;
 }
 
-// 儅僂僗僼僢僋僾儘僔乕僕儍
+// 銉炪偊銈广儠銉冦偗銉椼儹銈枫兗銈搞儯
 EXPORT LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wp, LPARAM lp)
 {
   if (nCode < 0)

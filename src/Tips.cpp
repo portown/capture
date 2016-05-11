@@ -22,13 +22,13 @@ namespace
 }
 
 
-// ŠÈˆÕƒƒbƒZ[ƒWƒ{ƒbƒNƒX
+// ç°¡æ˜“ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹
 int Mes(LPCTSTR lpText, LPCTSTR lpCaption, UINT uType)
 {
   return MessageBox(nullptr, lpText, lpCaption, uType);
 }
 
-// ‹éŒ`•`‰æi˜g‚Ì‚İj
+// çŸ©å½¢æç”»ï¼ˆæ ã®ã¿ï¼‰
 int DrawBox(HDC hdc, RECT rc)
 {
   int fnDrawMode;
@@ -47,7 +47,7 @@ int DrawBox(HDC hdc, RECT rc)
   return 1;
 }
 
-// ”r‘¼“I•¶š—ñæ“¾
+// æ’ä»–çš„æ–‡å­—åˆ—å–å¾—
 int PutStrXor(HDC hdc, int x, int y, char* lpStr)
 {
   HBITMAP hBm;
@@ -68,7 +68,7 @@ int PutStrXor(HDC hdc, int x, int y, char* lpStr)
   return 1;
 }
 
-// RECT\‘¢‘Ì‚Ìƒ\[ƒg
+// RECTæ§‹é€ ä½“ã®ã‚½ãƒ¼ãƒˆ
 int SortRect(LPRECT lprc)
 {
   long lTmp;
@@ -90,7 +90,7 @@ int SortRect(LPRECT lprc)
   return 1;
 }
 
-// ƒT[ƒtƒFƒCƒX‚Ì‰Šú‰»
+// ã‚µãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®åˆæœŸåŒ–
 int InitSurface(HWND hWnd, HDC& hDC, HBITMAP& hBm, int w, int h)
 {
   HDC hTempDC;
@@ -104,7 +104,7 @@ int InitSurface(HWND hWnd, HDC& hDC, HBITMAP& hBm, int w, int h)
   return 1;
 }
 
-// ‰æ‘œ•Û‘¶
+// ç”»åƒä¿å­˜
 BOOL SavePicture(char const* szFName, HDC hDC, HBITMAP hBm)
 {
   BITMAP Bm;
@@ -129,7 +129,7 @@ namespace
     return (((bitmap.bmWidth * bitmap.bmBitsPixel + 31) & ~31) >> 3) * bitmap.bmHeight;
   }
 
-  // BMP•Û‘¶
+  // BMPä¿å­˜
   bool SaveAsBmp(HDC hDC, HBITMAP hBm, char const* szFName)
   {
     ::BITMAP Bm;
@@ -150,7 +150,7 @@ namespace
     std::ofstream of(szFName, std::ios::out | std::ios::binary | std::ios::trunc);
     if (!of)
     {
-      Mes("ƒtƒ@ƒCƒ‹‚Ì•Û‘¶‚É¸”s‚µ‚Ü‚µ‚½", nullptr, MB_OK | MB_ICONERROR);
+      Mes("ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿å­˜ã«å¤±æ•—ã—ã¾ã—ãŸ", nullptr, MB_OK | MB_ICONERROR);
       return false;
     }
 
@@ -167,7 +167,7 @@ namespace
     return of;
   }
 
-  // PNG•Û‘¶
+  // PNGä¿å­˜
   bool WritePng(char const* szFName, unsigned char const* lpScBits, int width, int height)
   {
     std::unique_ptr<FILE, decltype(&std::fclose)> const fp(std::fopen(szFName, "wb"), &std::fclose);
@@ -196,7 +196,7 @@ namespace
 
     ::png_write_info(lpps, lppi);
 
-    // width * 3 ‚ğ‰º‰ñ‚ç‚È‚¢Å¬‚Ì 4 ‚Ì”{”
+    // width * 3 ã‚’ä¸‹å›ã‚‰ãªã„æœ€å°ã® 4 ã®å€æ•°
     auto const bytes_per_line = ((width * 3 + 3) / 4) * 4;
     for (auto i = 0; i < height; ++i)
     {
@@ -219,7 +219,7 @@ namespace
     return true;
   }
 
-  // PNG•Û‘¶
+  // PNGä¿å­˜
   bool SaveAsPng(HDC hDC, HBITMAP hBm, char const* szFName)
   {
     ::BITMAP Bm;
@@ -243,7 +243,7 @@ namespace
   }
 }
 
-// ƒ^ƒuƒRƒ“ƒgƒ[ƒ‹‚Ìì¬
+// ã‚¿ãƒ–ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®ä½œæˆ
 HWND CreateMyTab(HWND hWnd)
 {
   INITCOMMONCONTROLSEX ic;
@@ -266,7 +266,7 @@ HWND CreateMyTab(HWND hWnd)
   return hTab;
 }
 
-// ƒ^ƒu‚Ì’Ç‰Á
+// ã‚¿ãƒ–ã®è¿½åŠ 
 int AddTab(HWND hTab, int nMax)
 {
   TCITEM ti;
@@ -284,7 +284,7 @@ int AddTab(HWND hTab, int nMax)
   return 1;
 }
 
-// ƒ^ƒu–¼‚Ì•ÏX
+// ã‚¿ãƒ–åã®å¤‰æ›´
 int SetTabText(HWND hTab, int nSel, char const* lpText)
 {
   TCITEM ti;
@@ -297,7 +297,7 @@ int SetTabText(HWND hTab, int nSel, char const* lpText)
   return 1;
 }
 
-// ƒ^ƒu–¼‚Ìæ“¾
+// ã‚¿ãƒ–åã®å–å¾—
 int GetTabText(HWND hTab, int nSel, char* lpText)
 {
   TCITEM ti;
@@ -308,7 +308,7 @@ int GetTabText(HWND hTab, int nSel, char* lpText)
   return 1;
 }
 
-// DCSET‚Ìì¬
+// DCSETã®ä½œæˆ
 DCSET CreateDCSet()
 {
   DCSET DCSet;
