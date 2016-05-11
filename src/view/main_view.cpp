@@ -9,11 +9,12 @@
 #include <utility>
 
 #include <boost/exception/all.hpp>
-#include <boost/optional.hpp>
 
 #include <commctrl.h>
 
 #include <capdll.h>
+
+#include "../optional.hpp"
 
 #include "../resource.h"
 #include "../funcs.h"
@@ -43,7 +44,7 @@ namespace
     auto ReadMyProfile() -> void;
     auto WriteMyProfile() -> void;
     auto GetSaveName(HWND)
-        -> boost::optional<std::pair<std::string, std::string>>;
+        -> std::optional<std::pair<std::string, std::string>>;
 }
 
 
@@ -418,7 +419,7 @@ namespace
     }
 
     auto GetSaveName(HWND hWnd)
-        -> boost::optional<std::pair<std::string, std::string>>
+        -> std::optional<std::pair<std::string, std::string>>
     {
         ::OPENFILENAME ofn;
 
