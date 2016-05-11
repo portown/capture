@@ -14,8 +14,8 @@
 
 struct DCSET
 {
-  std::shared_ptr<capture::model::picture> picture;
-	BOOL bSave;
+    std::shared_ptr<capture::model::picture> picture;
+    BOOL bSave;
 };
 
 
