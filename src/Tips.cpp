@@ -13,6 +13,7 @@
 
 #include "defines.h"
 #include "funcs.h"
+#include "win_util.hpp"
 
 
 namespace
@@ -48,46 +49,30 @@ int DrawBox(HDC hdc, RECT rc)
 }
 
 // 排他的文字列取得
-int PutStrXor(HDC hdc, int x, int y, char* lpStr)
+void PutStrXor(HDC hdc, int x, int y, std::string_view const str)
 {
-    HBITMAP hBm;
-    SIZE    sStr;
-    HDC     hDC;
+    auto const sStr = win::get_text_extent_point(hdc, str);
 
-    GetTextExtentPoint32(hdc, lpStr, lstrlen(lpStr), &sStr);
-
-    hDC = CreateCompatibleDC(hdc);
-    hBm = CreateCompatibleBitmap(hdc, sStr.cx, sStr.cy);
+    auto const hDC = CreateCompatibleDC(hdc);
+    auto const hBm = CreateCompatibleBitmap(hdc, sStr.cx, sStr.cy);
     SelectObject(hDC, hBm);
-    TextOut(hDC, 0, 0, lpStr, lstrlen(lpStr));
+    TextOut(hDC, 0, 0, str.data(), str.size());
     PatBlt(hDC, 0, 0, sStr.cx, sStr.cy, DSTINVERT);
     BitBlt(hdc, x - sStr.cx / 2, y, sStr.cx, sStr.cy, hDC, 0, 0, SRCINVERT);
     DeleteObject(hBm);
     DeleteDC(hDC);
-
-    return 1;
 }
 
-// RECT構造体のソート
-int SortRect(LPRECT lprc)
-{
-    long lTmp;
+void normalize(RECT& rc) {
+    using std::swap;
+    if (rc.right < rc.left) swap(rc.left, rc.right);
+    if (rc.bottom < rc.top) swap(rc.top, rc.bottom);
+}
 
-    if (lprc->right < lprc->left)
-    {
-        lTmp        = lprc->right;
-        lprc->right = lprc->left;
-        lprc->left  = lTmp;
-    }
-
-    if (lprc->bottom < lprc->top)
-    {
-        lTmp         = lprc->bottom;
-        lprc->bottom = lprc->top;
-        lprc->top    = lTmp;
-    }
-
-    return 1;
+RECT normalized(RECT const& rc) {
+    RECT ret = rc;
+    normalize(ret);
+    return ret;
 }
 
 // サーフェイスの初期化

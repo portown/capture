@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include <Windows.h>
@@ -47,7 +48,7 @@ namespace capture
             RECT               rcArea;
             HDC                hEntire, hSubEnt;
             std::vector<DCSET> hCap;
-            char               szSize[32];
+            std::string        szSize;
             bool               bDrop;
             int                nMax;
         };

@@ -8,6 +8,8 @@
 #include <boost/container/pmr/vector.hpp>
 #include <boost/expected/expected.hpp>
 
+#include "string_view.hpp"
+
 
 namespace win {
     inline auto get_client_rect(::HWND const hWnd) {
@@ -18,6 +20,8 @@ namespace win {
 
     constexpr auto width(::RECT const& rc) { return rc.right - rc.left; }
     constexpr auto height(::RECT const& rc) { return rc.bottom - rc.top; }
+    constexpr auto centerX(::RECT const& rc) { return rc.left + width(rc) / 2; }
+    constexpr auto centerY(::RECT const& rc) { return rc.top + height(rc) / 2; }
 
     namespace detail {
         template <int code, class ResultType>
@@ -51,5 +55,11 @@ namespace win {
 
             buffer.resize(static_cast<std::size_t>(buffer.size() * 1.5), boost::container::default_init);
         }
+    }
+
+    inline auto get_text_extent_point(::HDC const hDC, std::string_view const str) {
+        SIZE size;
+        GetTextExtentPoint32(hDC, str.data(), str.size(), &size);
+        return size;
     }
 }

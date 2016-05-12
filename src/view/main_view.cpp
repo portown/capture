@@ -13,6 +13,7 @@
 #include <boost/container/pmr/vector.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/range/algorithm/copy.hpp>
+#include <boost/spirit/include/karma.hpp>
 
 #include <commctrl.h>
 
@@ -88,7 +89,7 @@ auto ns::main_view::on_event(
                         auto const rc = win::get_client_rect(GetDesktopWindow());
                         InitSurface(nullptr, hSubEnt, hBSEnt, rc.right, rc.bottom);
                         BitBlt(hSubEnt, 0, 0, rc.right, rc.bottom, hEntire, 0, 0, SRCCOPY);
-                        lstrcpy(szSize, "");
+                        szSize.clear();
                     }
                     break;
 
@@ -96,27 +97,24 @@ auto ns::main_view::on_event(
                 case WM_NCMOUSEMOVE:
                     if (bDrop)
                     {
-                        if (lstrlen(szSize))
+                        if (!szSize.empty())
                         {
-                            RECT rc = rcArea;
-                            SortRect(&rc);
-                            PutStrXor(hEntire,
-                                    (rc.right - rc.left) / 2 + rc.left,
-                                    rc.top - 20, szSize);
+                            auto const rc = normalized(rcArea);
+                            PutStrXor(hEntire, win::centerX(rc), rc.top - 20, szSize);
                             DrawBox(hEntire, rcArea);
                         }
 
                         auto const pt = win::get_cursor_pos();
                         rcArea.right  = pt.x;
                         rcArea.bottom = pt.y;
-                        wsprintf(szSize, "%d * %d", rcArea.right - rcArea.left,
-                                rcArea.bottom - rcArea.top);
+                        szSize.clear();
+                        boost::spirit::karma::generate(
+                                std::back_inserter(szSize),
+                                boost::spirit::karma::int_ << " * " << boost::spirit::karma::int_,
+                                win::width(rcArea), win::height(rcArea));
                         DrawBox(hEntire, rcArea);
-                        RECT rc = rcArea;
-                        SortRect(&rc);
-                        PutStrXor(hEntire,
-                                (rc.right - rc.left) / 2 + rc.left,
-                                rc.top - 20, szSize);
+                        auto const rc = normalized(rcArea);
+                        PutStrXor(hEntire, win::centerX(rc), rc.top - 20, szSize);
                     }
                     break;
 
@@ -131,7 +129,7 @@ auto ns::main_view::on_event(
                         rcArea.bottom = pt.y;
                         ReleaseDC(window_handle_, hSubEnt);
 
-                        SortRect(&rcArea);
+                        normalize(rcArea);
                         auto const rc = win::get_client_rect(GetDesktopWindow());
                         BitBlt(hEntire, 0, 0, rc.right, rc.bottom, hSubEnt, 0, 0, SRCCOPY);
                         hCap.push_back(CreateDCSet());
