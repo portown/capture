@@ -83,8 +83,7 @@ auto ns::main_view::on_event(
                     if (!bDrop)
                     {
                         bDrop = true;
-                        POINT pt;
-                        GetCursorPos(&pt);
+                        auto const pt = win::get_cursor_pos();
                         SetRect(&rcArea, pt.x, pt.y, pt.x, pt.y);
                         auto const rc = win::get_client_rect(GetDesktopWindow());
                         InitSurface(nullptr, hSubEnt, hBSEnt, rc.right, rc.bottom);
@@ -107,8 +106,7 @@ auto ns::main_view::on_event(
                             DrawBox(hEntire, rcArea);
                         }
 
-                        POINT pt;
-                        GetCursorPos(&pt);
+                        auto const pt = win::get_cursor_pos();
                         rcArea.right  = pt.x;
                         rcArea.bottom = pt.y;
                         wsprintf(szSize, "%d * %d", rcArea.right - rcArea.left,
@@ -128,8 +126,7 @@ auto ns::main_view::on_event(
                     {
                         bDrop = false;
 
-                        POINT pt;
-                        GetCursorPos(&pt);
+                        auto const pt = win::get_cursor_pos();
                         rcArea.right  = pt.x;
                         rcArea.bottom = pt.y;
                         ReleaseDC(window_handle_, hSubEnt);
@@ -282,8 +279,7 @@ auto ns::main_view::on_tab_right_clicked() -> void
 {
     auto const hMenu = ::LoadMenu(hInst, MAKEINTRESOURCE(IDR_TAB));
     auto const hSub  = ::GetSubMenu(hMenu, 0);
-    ::POINT pt;
-    ::GetCursorPos(&pt);
+    auto const pt = win::get_cursor_pos();
     ::TrackPopupMenu(hSub, TPM_LEFTALIGN, pt.x, pt.y, 0, window_handle_, nullptr);
     ::DestroyMenu(hMenu);
 }
@@ -367,13 +363,12 @@ namespace
 
     auto profile_file_path() -> std::string
     {
-        std::vector<char> buffer(MAX_PATH);
-        if (!::GetModuleFileName(nullptr, buffer.data(), buffer.size()))
+        auto const result = win::get_module_file_name(nullptr);
+        if (!result)
             throw std::runtime_error("GetModuleFileName failed"); // TODO handle the error
 
-        if (buffer.empty()) return {};
-
-        return boost::filesystem::path{buffer.begin(), buffer.end()}
+        auto const& name = result.value();
+        return boost::filesystem::path{name.begin(), name.end()}
                 .remove_filename()
                 .append("capture.ini")
                 .string();

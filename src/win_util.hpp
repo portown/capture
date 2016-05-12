@@ -4,6 +4,10 @@
 
 #include <windows.h>
 
+#include <boost/container/pmr/string.hpp>
+#include <boost/container/pmr/vector.hpp>
+#include <boost/expected/expected.hpp>
+
 
 namespace win {
     inline auto get_client_rect(::HWND const hWnd) {
@@ -27,5 +31,25 @@ namespace win {
     template <int code, class ResultType>
     inline ResultType get_stock_object(detail::GDI_stock_object_type<code, ResultType>) {
         return reinterpret_cast<ResultType>(::GetStockObject(code));
+    }
+
+    inline auto get_cursor_pos() {
+        ::POINT pt;
+        ::GetCursorPos(&pt);
+        return pt;
+    }
+
+    inline auto get_module_file_name(::HINSTANCE const hInstance) -> boost::expected<boost::container::pmr::basic_string<::TCHAR>, ::DWORD> {
+        boost::container::pmr::vector<::TCHAR> buffer(MAX_PATH, boost::container::default_init);
+        for (;;)
+        {
+            auto const ret = ::GetModuleFileName(hInstance, buffer.data(), buffer.size());
+            if (ret == 0) { return boost::make_unexpected(::GetLastError()); }
+            if (static_cast<std::size_t>(ret) < buffer.size()) {
+                return boost::container::pmr::basic_string<::TCHAR>{buffer.data(), static_cast<std::size_t>(ret)};
+            }
+
+            buffer.resize(static_cast<std::size_t>(buffer.size() * 1.5), boost::container::default_init);
+        }
     }
 }
