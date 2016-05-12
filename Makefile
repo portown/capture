@@ -59,6 +59,5 @@ capdll/%.o: capdll/%.cpp
 
 
 %.d: %.cpp
-	$(CXX) $(CXXFLAGS) -MM $< > $@
-	sed -i -e 's/\(^\S[^:]*\):/$(subst /,\/,$(dir $@))\1 $(subst /,\/,$@):/' $@
+	$(CXX) $(CXXFLAGS) -MM -MF $@ -MT '$@ $(patsubst %.cpp,%.o,$<)' $<
 -include $(MAIN_DEPENDS) $(DLL_DEPENDS)
