@@ -23,6 +23,8 @@ namespace win {
     constexpr auto centerX(::RECT const& rc) { return rc.left + width(rc) / 2; }
     constexpr auto centerY(::RECT const& rc) { return rc.top + height(rc) / 2; }
 
+    constexpr auto size(::RECT const& rc) { return ::SIZE{width(rc), height(rc)}; }
+
     namespace detail {
         template <int code, class ResultType>
         struct GDI_stock_object_type {};
@@ -61,5 +63,13 @@ namespace win {
         SIZE size;
         GetTextExtentPoint32(hDC, str.data(), str.size(), &size);
         return size;
+    }
+
+    inline auto pat_blt(::HDC const hDC, ::RECT const& rect, ::DWORD const rop) {
+        return ::PatBlt(hDC, rect.left, rect.top, width(rect), height(rect), rop);
+    }
+
+    inline auto bit_blt(::HDC const hDestDC, ::RECT const& destRect, HDC const hSrcDC, ::POINT const& srcPoint, ::DWORD const rop) {
+        return ::BitBlt(hDestDC, destRect.left, destRect.top, width(destRect), height(destRect), hSrcDC, srcPoint.x, srcPoint.y, rop);
     }
 }

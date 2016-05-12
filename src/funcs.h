@@ -4,6 +4,8 @@
 #ifndef FUNCTIONS_HEADER
 #define FUNCTIONS_HEADER
 
+#include <utility>
+
 #include "string_view.hpp"
 
 
@@ -16,12 +18,11 @@ int DrawBox( HDC, RECT );
 void PutStrXor(HDC, int, int, std::string_view);
 void normalize(RECT& rc);
 RECT normalized(RECT const& rc);
-int InitSurface( HWND, HDC &, HBITMAP &, int, int );
+std::tuple<::HDC, ::HBITMAP> InitSurface(::HWND, ::SIZE const&);
 int SavePicture( char const*, HDC, HBITMAP );
-HWND CreateMyTab( HWND hWnd );
+HWND CreateMyTab(HWND hWnd);
 int AddTab( HWND, int );
-int SetTabText( HWND, int, char const* );
-int GetTabText( HWND, int, char * );
+bool SetTabText(HWND, int, std::string_view);
 DCSET CreateDCSet();
 
 int ShowOption( HWND );

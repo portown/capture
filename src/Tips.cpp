@@ -75,18 +75,15 @@ RECT normalized(RECT const& rc) {
     return ret;
 }
 
-// サーフェイスの初期化
-int InitSurface(HWND hWnd, HDC& hDC, HBITMAP& hBm, int w, int h)
+std::tuple<::HDC, ::HBITMAP> InitSurface(::HWND const hWnd, ::SIZE const& size)
 {
-    HDC hTempDC;
+    auto const hTempDC = ::GetDC(hWnd);
+    auto const hDC = ::CreateCompatibleDC(hTempDC);
+    auto const hBitmap = ::CreateCompatibleBitmap(hTempDC, size.cx, size.cy);
+    ::SelectObject(hDC, hBitmap);
+    ::ReleaseDC(hWnd, hTempDC);
 
-    hTempDC = GetDC(hWnd);
-    hDC     = CreateCompatibleDC(hTempDC);
-    hBm     = CreateCompatibleBitmap(hTempDC, w, h);
-    SelectObject(hDC, hBm);
-    ReleaseDC(hWnd, hTempDC);
-
-    return 1;
+    return std::make_tuple(hDC, hBitmap);
 }
 
 // 画像保存
@@ -232,23 +229,18 @@ namespace
 HWND CreateMyTab(HWND hWnd)
 {
     INITCOMMONCONTROLSEX ic;
-    HINSTANCE            hInst;
-    HWND                 hTab;
-
     ic.dwSize = sizeof(INITCOMMONCONTROLSEX);
     ic.dwICC  = ICC_TAB_CLASSES;
     InitCommonControlsEx(&ic);
 
-    hInst = ( HINSTANCE )GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
+    auto const hInst = reinterpret_cast<HINSTANCE>(GetWindowLongPtr(hWnd, GWLP_HINSTANCE));
 
-    hTab = CreateWindowEx(0,
+    return CreateWindowEx(0,
             WC_TABCONTROL,
             "",
             WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS,
             0, 0, 0, 0, hWnd,
-            ( HMENU )ID_MYTAB, hInst, nullptr);
-
-    return hTab;
+            reinterpret_cast<HMENU>(ID_MYTAB), hInst, nullptr);
 }
 
 // タブの追加
@@ -269,28 +261,14 @@ int AddTab(HWND hTab, int nMax)
     return 1;
 }
 
-// タブ名の変更
-int SetTabText(HWND hTab, int nSel, char const* lpText)
+bool SetTabText(HWND hTab, int nSel, std::string_view text)
 {
     TCITEM ti;
 
     ZeroMemory(&ti, sizeof(TCITEM));
     ti.mask    = TCIF_TEXT;
-    ti.pszText = const_cast<char*>(lpText);
-    TabCtrl_SetItem(hTab, nSel, &ti);
-
-    return 1;
-}
-
-// タブ名の取得
-int GetTabText(HWND hTab, int nSel, char* lpText)
-{
-    TCITEM ti;
-
-    TabCtrl_GetItem(hTab, nSel, &ti);
-    lstrcpy(lpText, ti.pszText);
-
-    return 1;
+    ti.pszText = const_cast<char*>(text.data());
+    return TabCtrl_SetItem(hTab, nSel, &ti);
 }
 
 // DCSETの作成

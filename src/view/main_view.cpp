@@ -87,8 +87,8 @@ auto ns::main_view::on_event(
                         auto const pt = win::get_cursor_pos();
                         SetRect(&rcArea, pt.x, pt.y, pt.x, pt.y);
                         auto const rc = win::get_client_rect(GetDesktopWindow());
-                        InitSurface(nullptr, hSubEnt, hBSEnt, rc.right, rc.bottom);
-                        BitBlt(hSubEnt, 0, 0, rc.right, rc.bottom, hEntire, 0, 0, SRCCOPY);
+                        std::tie(hSubEnt, hBSEnt) = InitSurface(nullptr, win::size(rc));
+                        win::bit_blt(hSubEnt, rc, hEntire, {0, 0}, SRCCOPY);
                         szSize.clear();
                     }
                     break;
@@ -130,8 +130,8 @@ auto ns::main_view::on_event(
                         ReleaseDC(window_handle_, hSubEnt);
 
                         normalize(rcArea);
-                        auto const rc = win::get_client_rect(GetDesktopWindow());
-                        BitBlt(hEntire, 0, 0, rc.right, rc.bottom, hSubEnt, 0, 0, SRCCOPY);
+                        win::bit_blt(hEntire, win::get_client_rect(GetDesktopWindow()),
+                                hSubEnt, {0, 0}, SRCCOPY);
                         hCap.push_back(CreateDCSet());
                         hCap.back().picture = model::picture::capture(hSubEnt, rcArea);
                         AddTab(hTab, nMax);
@@ -152,9 +152,8 @@ auto ns::main_view::on_event(
                     if (bDrop)
                     {
                         bDrop = false;
-
-                        auto const rc = win::get_client_rect(GetDesktopWindow());
-                        BitBlt(hEntire, 0, 0, rc.right, rc.bottom, hSubEnt, 0, 0, SRCCOPY);
+                        win::bit_blt(hEntire, win::get_client_rect(GetDesktopWindow()),
+                                hSubEnt, {0, 0}, SRCCOPY);
                     }
                     break;
             }
@@ -229,14 +228,14 @@ auto ns::main_view::on_paint() -> void
     ::PAINTSTRUCT ps;
     ::HDC const hdc = ::BeginPaint(window_handle_, &ps);
     auto const rc = win::get_client_rect(window_handle_);
-    ::PatBlt(hdc, 0, 0, rc.right, rc.bottom, WHITENESS);
+    win::pat_blt(hdc, rc, WHITENESS);
     auto const nSel = TabCtrl_GetCurSel(hTab);
     if (nSel >= 0)
     {
         TabCtrl_AdjustRect(hTab, FALSE, &rc);
         auto const& picture = hCap[nSel].picture;
-        ::BitBlt(hdc, 0, rc.top, picture->width(), picture->height(),
-                picture->context_handle(), 0, 0, SRCCOPY);
+        win::bit_blt(hdc, {0, rc.top, static_cast<::LONG>(picture->width()), static_cast<::LONG>(picture->height())},
+                picture->context_handle(), {0, 0}, SRCCOPY);
     }
     ::EndPaint(window_handle_, &ps);
 }
