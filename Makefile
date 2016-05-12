@@ -15,7 +15,7 @@ MAIN_DIRS = src src/view
 MAIN_SOURCES = $(wildcard $(addsuffix /*.cpp,$(MAIN_DIRS)))
 MAIN_OBJECTS = $(MAIN_SOURCES:.cpp=.o)
 MAIN_DEPENDS = $(MAIN_SOURCES:.cpp=.d)
-MAIN_LIBS = -lgdi32 -lcomctl32 -lcomdlg32 -lpng -lz
+MAIN_LIBS = -lgdi32 -lcomctl32 -lcomdlg32 -lpng -lz -lboost_system -lboost_container -lboost_filesystem
 
 MAIN_RESOURCES = src/resources.o
 MAIN_RCS = src/main.rc

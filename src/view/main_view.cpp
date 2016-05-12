@@ -9,6 +9,10 @@
 #include <utility>
 
 #include <boost/exception/all.hpp>
+#include <boost/container/pmr/string.hpp>
+#include <boost/container/pmr/vector.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 #include <commctrl.h>
 
@@ -45,7 +49,7 @@ namespace
     auto ReadMyProfile() -> void;
     auto WriteMyProfile() -> void;
     auto GetSaveName(HWND)
-        -> std::optional<std::pair<std::string, std::string>>;
+        -> std::optional<std::pair<boost::container::pmr::string, boost::container::pmr::string>>;
 }
 
 
@@ -369,14 +373,10 @@ namespace
 
         if (buffer.empty()) return {};
 
-        std::string path{buffer.begin(), buffer.end()};
-        auto const separator_position = path.find_last_of('\\');
-        if (separator_position == std::string::npos)
-            throw std::runtime_error("illegal module path");
-
-        path.replace(std::next(path.begin(), separator_position + 1), path.end(), "capture.ini");
-
-        return path;
+        return boost::filesystem::path{buffer.begin(), buffer.end()}
+                .remove_filename()
+                .append("capture.ini")
+                .string();
     }
 
     auto ReadMyProfile() -> void
@@ -414,28 +414,26 @@ namespace
     }
 
     auto GetSaveName(HWND hWnd)
-        -> std::optional<std::pair<std::string, std::string>>
+        -> std::optional<std::pair<boost::container::pmr::string, boost::container::pmr::string>>
     {
         ::OPENFILENAME ofn;
 
-        std::vector<char> path_buffer(MAX_PATH);
-        std::vector<char> title_buffer(MAX_PATH);
+        boost::container::pmr::vector<char> path_buffer(MAX_PATH, boost::container::default_init);
+        boost::container::pmr::vector<char> title_buffer(MAX_PATH, boost::container::default_init);
 
         auto const instance_handle = reinterpret_cast< ::HINSTANCE>(::GetWindowLongPtr(hWnd, GWLP_HINSTANCE));
         auto const title = load_string_from_resource(instance_handle, IDS_SAVE_TITLE);
 
         auto const bmp_label = load_string_from_resource(instance_handle, IDS_SAVE_BMP_NAME);
-        std::string const bmp_filter{"*.bmp"};
         auto const png_label = load_string_from_resource(instance_handle, IDS_SAVE_PNG_NAME);
-        std::string const png_filter{"*.png"};
         std::vector<char> filter;
-        std::copy(bmp_label.begin(), bmp_label.end(), std::back_inserter(filter));
+        boost::copy(bmp_label, std::back_inserter(filter));
         filter.push_back('\0');
-        std::copy(bmp_filter.begin(), bmp_filter.end(), std::back_inserter(filter));
+        boost::copy("*.bmp", std::back_inserter(filter));
         filter.push_back('\0');
-        std::copy(png_label.begin(), png_label.end(), std::back_inserter(filter));
+        boost::copy(png_label, std::back_inserter(filter));
         filter.push_back('\0');
-        std::copy(png_filter.begin(), png_filter.end(), std::back_inserter(filter));
+        boost::copy("*.png", std::back_inserter(filter));
         filter.push_back('\0');
         filter.push_back('\0');
 
@@ -454,8 +452,8 @@ namespace
 
         if (!::GetSaveFileName(&ofn)) return {};
 
-        std::string path{path_buffer.begin(), path_buffer.end()};
-        std::string file_title{title_buffer.begin(), title_buffer.end()};
+        boost::container::pmr::string path{path_buffer.begin(), path_buffer.end()};
+        boost::container::pmr::string file_title{title_buffer.begin(), title_buffer.end()};
 
         return std::make_pair(std::move(path), std::move(file_title));
     }
