@@ -12,6 +12,7 @@
 #include <boost/container/pmr/string.hpp>
 #include <boost/container/pmr/vector.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/optional.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/spirit/include/karma.hpp>
 
@@ -19,7 +20,6 @@
 
 #include <capdll.h>
 
-#include "../optional.hpp"
 #include "../win_util.hpp"
 
 #include "../resource.h"
@@ -50,7 +50,7 @@ namespace
     auto ReadMyProfile() -> void;
     auto WriteMyProfile() -> void;
     auto GetSaveName(HWND)
-        -> std::optional<std::pair<boost::container::pmr::string, boost::container::pmr::string>>;
+        -> boost::optional<std::pair<boost::container::pmr::string, boost::container::pmr::string>>;
 }
 
 
@@ -406,7 +406,7 @@ namespace
     }
 
     auto GetSaveName(HWND hWnd)
-        -> std::optional<std::pair<boost::container::pmr::string, boost::container::pmr::string>>
+        -> boost::optional<std::pair<boost::container::pmr::string, boost::container::pmr::string>>
     {
         ::OPENFILENAME ofn;
 
