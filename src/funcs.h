@@ -13,7 +13,9 @@
 // 関数の宣言
 // ==============================================
 
-int Mes( LPCTSTR = NULL, LPCTSTR = NULL, UINT = MB_OK );
+inline auto Mes(LPCTSTR lpText = NULL, LPCTSTR lpCaption = NULL, UINT uType = MB_OK) {
+    return ::MessageBox(nullptr, lpText, lpCaption, uType);
+}
 int DrawBox( HDC, RECT );
 void PutStrXor(HDC, int, int, std::string_view);
 void normalize(RECT& rc);

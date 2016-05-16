@@ -24,12 +24,6 @@ namespace
 }
 
 
-// 簡易メッセージボックス
-int Mes(LPCTSTR lpText, LPCTSTR lpCaption, UINT uType)
-{
-    return MessageBox(nullptr, lpText, lpCaption, uType);
-}
-
 // 矩形描画（枠のみ）
 int DrawBox(HDC hdc, RECT rc)
 {
