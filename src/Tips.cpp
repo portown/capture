@@ -44,7 +44,7 @@ int DrawBox(HDC hdc, RECT rc)
 }
 
 // 排他的文字列取得
-void PutStrXor(HDC hdc, int x, int y, std::string_view const str)
+void PutStrXor(HDC hdc, int x, int y, boost::string_view const str)
 {
     auto const sStr = win::get_text_extent_point(hdc, str);
 
@@ -257,7 +257,7 @@ int AddTab(HWND hTab, int nMax)
     return 1;
 }
 
-bool SetTabText(HWND hTab, int nSel, std::string_view text)
+bool SetTabText(HWND hTab, int nSel, boost::string_view text)
 {
     TCITEM ti;
 

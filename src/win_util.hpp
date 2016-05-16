@@ -7,8 +7,7 @@
 #include <boost/container/pmr/string.hpp>
 #include <boost/container/pmr/vector.hpp>
 #include <boost/expected/expected.hpp>
-
-#include "string_view.hpp"
+#include <boost/utility/string_view.hpp>
 
 
 namespace win {
@@ -59,7 +58,7 @@ namespace win {
         }
     }
 
-    inline auto get_text_extent_point(::HDC const hDC, std::string_view const str) {
+    inline auto get_text_extent_point(::HDC const hDC, boost::string_view const str) {
         SIZE size;
         GetTextExtentPoint32(hDC, str.data(), str.size(), &size);
         return size;

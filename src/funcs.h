@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "string_view.hpp"
+#include <boost/utility/string_view.hpp>
 
 
 // ==============================================
@@ -17,14 +17,14 @@ inline auto Mes(LPCTSTR lpText = NULL, LPCTSTR lpCaption = NULL, UINT uType = MB
     return ::MessageBox(nullptr, lpText, lpCaption, uType);
 }
 int DrawBox( HDC, RECT );
-void PutStrXor(HDC, int, int, std::string_view);
+void PutStrXor(HDC, int, int, boost::string_view);
 void normalize(RECT& rc);
 RECT normalized(RECT const& rc);
 std::tuple<::HDC, ::HBITMAP> InitSurface(::HWND, ::SIZE const&);
 int SavePicture( char const*, HDC, HBITMAP );
 HWND CreateMyTab(HWND hWnd);
 int AddTab( HWND, int );
-bool SetTabText(HWND, int, std::string_view);
+bool SetTabText(HWND, int, boost::string_view);
 DCSET CreateDCSet();
 
 int ShowOption( HWND );

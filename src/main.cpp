@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <Windows.h>
+#include <boost/utility/string_view.hpp>
 
-#include "string_view.hpp"
+#include <Windows.h>
 
 #include "view/main_view.hpp"
 #include "win_util.hpp"
@@ -18,8 +18,8 @@ namespace
 
     // 関数の宣言
     LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-    bool             InitApp(HINSTANCE, std::string_view);
-    bool             InitInstance(HINSTANCE, std::string_view, int, view::main_view&);
+    bool             InitApp(HINSTANCE, boost::string_view);
+    bool             InitInstance(HINSTANCE, boost::string_view, int, view::main_view&);
     int Run();
 }
 
@@ -45,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hCurInst, HINSTANCE, LPSTR, int nCmd)
 namespace
 {
     // ウィンドウクラスの登録
-    bool InitApp(HINSTANCE hInst, std::string_view const class_name)
+    bool InitApp(HINSTANCE hInst, boost::string_view const class_name)
     {
         WNDCLASSEX wc;
 
@@ -66,7 +66,7 @@ namespace
     }
 
     // ウィンドウの作成
-    bool InitInstance(HINSTANCE hInst, std::string_view const class_name, int nCmd, view::main_view& view)
+    bool InitInstance(HINSTANCE hInst, boost::string_view const class_name, int nCmd, view::main_view& view)
     {
         HWND hWnd = CreateWindowEx(0,
                 class_name.data(),
