@@ -14,6 +14,7 @@
 #include "defines.h"
 #include "funcs.h"
 #include "win_util.hpp"
+#include "unique_resource.hpp"
 
 
 namespace
@@ -77,11 +78,12 @@ RECT normalized(RECT const& rc) {
 
 std::tuple<::HDC, ::HBITMAP> InitSurface(::HWND const hWnd, ::SIZE const& size)
 {
-    auto const hTempDC = ::GetDC(hWnd);
+    using namespace std::placeholders;
+    auto const hTempDC = std_experimental::make_unique_resource(::GetDC(hWnd), std::bind(&::ReleaseDC, hWnd, _1));
+
     auto const hDC = ::CreateCompatibleDC(hTempDC);
     auto const hBitmap = ::CreateCompatibleBitmap(hTempDC, size.cx, size.cy);
     ::SelectObject(hDC, hBitmap);
-    ::ReleaseDC(hWnd, hTempDC);
 
     return std::make_tuple(hDC, hBitmap);
 }
