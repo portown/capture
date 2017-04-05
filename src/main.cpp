@@ -4,7 +4,7 @@
 
 #include <boost/utility/string_view.hpp>
 
-#include <Windows.h>
+#include <windows.h>
 
 #include "view/main_view.hpp"
 #include "win_util.hpp"

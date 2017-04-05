@@ -1,0 +1,21 @@
+version: "3"
+services:
+    compile: &defaults
+        build:
+            context: env
+        volumes:
+            - .:/home/capture
+        environment:
+            CXX: x86_64-w64-mingw32-g++
+            DLLTOOL: x86_64-w64-mingw32-dlltool
+            STRIP: x86_64-w64-mingw32-strip
+            WINDRES: x86_64-w64-mingw32-windres
+        command: make
+
+    clean:
+        <<: *defaults
+        command: make clean
+
+    bash:
+        <<: *defaults
+        command: bash
