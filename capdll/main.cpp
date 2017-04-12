@@ -35,7 +35,7 @@ EXPORT int SetMouseHook(HWND hDst, UINT uTp)
     if (uTp > SMH_MAX)
         return 0;
 
-    hMouseHook = SetWindowsHookEx(WH_MOUSE, MouseHookProc, hInst, 0);
+    hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, MouseHookProc, hInst, 0);
     if (!hMouseHook)
         return 0;
 
@@ -68,19 +68,18 @@ EXPORT LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wp, LPARAM lp)
     if (nCode < 0)
         return CallNextHookEx(hMouseHook, nCode, wp, lp);
 
-    LPMOUSEHOOKSTRUCT lpmh = reinterpret_cast<LPMOUSEHOOKSTRUCT>(lp);
-    POINT             pt   = lpmh->pt;
-    SendMessage(hMse, WM_USER, wp, reinterpret_cast<LPARAM>(&pt));
+    PostMessage(hMse, WM_USER, wp, 0);
 
-    switch (uType)
-    {
-        case SMH_SHARE:
-            return CallNextHookEx(hMouseHook, nCode, wp, lp);
-
-        case SMH_EXCLUDE:
-            return TRUE;
-
-        default:
-            return CallNextHookEx(hMouseHook, nCode, wp, lp);
+    if (wp == WM_LBUTTONDOWN
+            || wp == WM_NCLBUTTONDOWN
+            || wp == WM_LBUTTONUP
+            || wp == WM_NCLBUTTONUP
+            || wp == WM_RBUTTONDOWN
+            || wp == WM_NCRBUTTONDOWN
+            || wp == WM_RBUTTONUP
+            || wp == WM_NCRBUTTONUP) {
+        return TRUE;
     }
+
+    return CallNextHookEx(hMouseHook, nCode, wp, lp);
 }

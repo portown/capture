@@ -107,14 +107,14 @@ auto ns::main_view::on_event(
                         auto const pt = win::get_cursor_pos();
                         rcArea.right  = pt.x;
                         rcArea.bottom = pt.y;
-                        szSize.clear();
-                        boost::spirit::karma::generate(
-                                std::back_inserter(szSize),
-                                boost::spirit::karma::int_ << " * " << boost::spirit::karma::int_,
-                                win::width(rcArea), win::height(rcArea));
+                        //szSize.clear();
+                        //boost::spirit::karma::generate(
+                        //        std::back_inserter(szSize),
+                        //        boost::spirit::karma::int_ << " * " << boost::spirit::karma::int_,
+                        //        win::width(rcArea), win::height(rcArea));
                         DrawBox(hEntire, rcArea);
                         auto const rc = normalized(rcArea);
-                        PutStrXor(hEntire, win::centerX(rc), rc.top - 20, szSize);
+                        //PutStrXor(hEntire, win::centerX(rc), rc.top - 20, szSize);
                     }
                     break;
 
