@@ -25,7 +25,7 @@ RUN apk add --no-cache \
  # Download zlib
  && curl -fsSL "$ZLIB_DOWNLOAD_URL" -o zlib.tar.gz \
  && curl -fsSL "$ZLIB_DOWNLOAD_SIG" -o zlib.tar.gz.asc \
- && gpg --batch --keyserver pgp.mit.edu --keyserver-options http-proxy=$http_proxy --recv-keys "$ZLIB_KEY" \
+ && gpg --batch --keyserver pgp.mit.edu `if test "x$http_proxy" != "x"; then echo "--keyserver-options http-proxy=$http_proxy"; fi` --recv-keys "$ZLIB_KEY" \
  && gpg --batch --verify zlib.tar.gz.asc zlib.tar.gz \
  && gpg --batch --yes --delete-keys "$ZLIB_KEY" && rm -Rf /root/.gnupg \
  && rm -f zlib.tar.gz.asc \
