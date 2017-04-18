@@ -25,7 +25,7 @@ RUN apk add --no-cache \
  # Download zlib
  && curl -fsSL "$ZLIB_DOWNLOAD_URL" -o zlib.tar.gz \
  && curl -fsSL "$ZLIB_DOWNLOAD_SIG" -o zlib.tar.gz.asc \
- && gpg --batch --keyserver pgp.mit.edu --keyserver-options http-proxy=$http_proxy --recv-keys "$ZLIB_KEY" \
+ && gpg --batch --keyserver pgp.mit.edu `if test "x$http_proxy" != "x"; then echo "--keyserver-options http-proxy=$http_proxy"; fi` --recv-keys "$ZLIB_KEY" \
  && gpg --batch --verify zlib.tar.gz.asc zlib.tar.gz \
  && gpg --batch --yes --delete-keys "$ZLIB_KEY" && rm -Rf /root/.gnupg \
  && rm -f zlib.tar.gz.asc \
@@ -59,7 +59,7 @@ RUN apk add --no-cache \
  && ( cd boost_`echo $BOOST_VERSION | sed -e 's/\./_/g'` \
     && echo "using gcc : mingw : x86_64-w64-mingw32-g++ ;" > user-config.jam \
     && ./bootstrap.sh --without-icu --prefix=$BOOST_ROOT --with-libraries=container,filesystem,system \
-    && ./b2 --user-config=user-config.jam \
+    && ./b2 -d0 --user-config=user-config.jam \
         --layout=system \
         toolset=gcc-mingw \
         target-os=windows \

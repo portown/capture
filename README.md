@@ -1,5 +1,7 @@
 # Capture
 
+[![Build Status](https://travis-ci.org/portown/capture.svg?branch=master)](https://travis-ci.org/portown/capture)
+
 ## 概要
 
 本アプリは、Windows 上で動作する、範囲指定可能な画面キャプチャツールです。
