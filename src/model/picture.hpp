@@ -5,7 +5,7 @@
 #include <memory>
 #include <utility>
 
-#include <Windows.h>
+#include <windows.h>
 
 
 namespace capture
