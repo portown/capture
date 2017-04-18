@@ -59,7 +59,7 @@ RUN apk add --no-cache \
  && ( cd boost_`echo $BOOST_VERSION | sed -e 's/\./_/g'` \
     && echo "using gcc : mingw : x86_64-w64-mingw32-g++ ;" > user-config.jam \
     && ./bootstrap.sh --without-icu --prefix=$BOOST_ROOT --with-libraries=container,filesystem,system \
-    && ./b2 --user-config=user-config.jam \
+    && ./b2 -d0 --user-config=user-config.jam \
         --layout=system \
         toolset=gcc-mingw \
         target-os=windows \
